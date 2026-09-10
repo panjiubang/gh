@@ -228,7 +228,7 @@ async function geminiOverview(mode: Mode, digest: Digest, keys: string[]): Promi
     const model = client.getGenerativeModel({
       model: 'gemini-2.0-flash',
       systemInstruction:
-        'You are OSIRIS, a terse intelligence analyst. Given structured facts, write a sharp 2-4 sentence situational read-out. No preamble, no markdown headers, no hedging. Lead with the bottom line.',
+        'You are 观寰, a terse intelligence analyst. Given structured facts, write a sharp 2-4 sentence situational read-out. No preamble, no markdown headers, no hedging. Lead with the bottom line.',
     });
     const prompt = `MODE: ${mode.toUpperCase()}\nBOTTOM LINE: ${digest.summaryLine}\nFACTS:\n${digest.facts.map(f => `- ${f}`).join('\n')}\n\nWrite the read-out now.`;
     const result = await model.generateContent(prompt);

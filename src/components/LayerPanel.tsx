@@ -50,7 +50,7 @@ interface LayerGroupDef {
 const LAYER_GROUPS: LayerGroupDef[] = [
   {
     label: 'SDK',
-    fullLabel: 'OSIRIS SDK',
+    fullLabel: '观寰 SDK',
     icon: Network,
     layers: [
       { key: 'sdk_sea', label: 'Maritime Lines', dataKey: 'sdk_entities' },
@@ -73,6 +73,7 @@ const LAYER_GROUPS: LayerGroupDef[] = [
     icon: Ship,
     layers: [
       { key: 'maritime', label: 'Maritime / Naval', dataKey: 'maritime_ships,maritime_ports,maritime_chokepoints' },
+      { key: 'satellite_ships', label: 'SATELATE', dataKey: 'satellite_ships' },
     ],
   },
   {
@@ -254,8 +255,13 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
     let total = 0;
     let found = false;
     for (const k of dk.split(',')) {
-      if (data[k] && Array.isArray(data[k])) {
-        total += data[k].length;
+      const val = data[k];
+      if (val && Array.isArray(val)) {
+        total += val.length;
+        found = true;
+      } else if (val && Array.isArray(val.features)) {
+        // GeoJSON FeatureCollection (e.g. satellite_ships)
+        total += val.features.length;
         found = true;
       }
     }

@@ -320,7 +320,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       createDot(map, 'dot-fire', isGhost ? phantomPurple : '#E65100', 10);
       createDot(map, 'dot-cctv', cameraColor, 10);
 
-      const sources = ['flights','military','jets','private-fl','satellites','earthquakes','gdelt','day-night','cctv','fires','weather','infrastructure','maritime','maritime-choke','maritime-ships','live-news','conflict-zones', 'war-alerts-targets', 'war-alerts-lines', 'balloons', 'radiation', 'ip-sweep-devices', 'ip-sweep-pulse', 'ip-sweep-connections', 'scan-targets', 'sdk-entities', 'sdk-links', 'malware-nodes', 'malware-new', 'network-mesh', 'cyber-arcs', 'cyber-heads', 'cyber-impacts', 'gdelt-events', 'cf-outages', 'cf-attacks'];
+      const sources = ['flights','military','jets','private-fl','satellites','earthquakes','gdelt','day-night','cctv','fires','weather','infrastructure','maritime','maritime-choke','maritime-ships','satellite-ships','live-news','conflict-zones', 'war-alerts-targets', 'war-alerts-lines', 'balloons', 'radiation', 'ip-sweep-devices', 'ip-sweep-pulse', 'ip-sweep-connections', 'scan-targets', 'sdk-entities', 'sdk-links', 'malware-nodes', 'malware-new', 'network-mesh', 'cyber-arcs', 'cyber-heads', 'cyber-impacts', 'gdelt-events', 'cf-outages', 'cf-attacks'];
       sources.forEach(s => map.addSource(s, { type: 'geojson', data: EMPTY_FC }));
 
       // ── FLIGHT ROUTE VISUALIZATION SOURCES & LAYERS ──
@@ -793,6 +793,23 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         'text-offset': [0, 1.2], 'text-allow-overlap': false,
       }, paint: { 'text-color': ['match', ['get','type'], 'military','#D32F2F', 'tanker','#E65100', 'cargo','#26C6DA', '#B0BEC5'], 'text-halo-color': '#000', 'text-halo-width': 1 }});
 
+      // Satellite Ships (MySQL AIS) — purple/cyan family, distinct from maritime
+      map.addLayer({ id: 'sat-ship-glow', type: 'circle', source: 'satellite-ships', paint: {
+        'circle-radius': ['interpolate',['linear'],['zoom'], 1,4, 5,8, 10,14],
+        'circle-color': ['get','color'],
+        'circle-opacity': 0.15, 'circle-blur': 1,
+      }});
+      map.addLayer({ id: 'sat-ship-dots', type: 'circle', source: 'satellite-ships', paint: {
+        'circle-radius': ['interpolate',['linear'],['zoom'], 1,2, 5,4, 10,7],
+        'circle-color': ['get','color'],
+        'circle-opacity': 0.85,
+        'circle-stroke-width': 1.5, 'circle-stroke-color': ['get','color'], 'circle-stroke-opacity': 0.5,
+      }});
+      map.addLayer({ id: 'sat-ship-label', type: 'symbol', source: 'satellite-ships', minzoom: 6, layout: {
+        'text-field': ['get','name'], 'text-size': 9, 'text-font': ['Open Sans Regular'],
+        'text-offset': [0, 1.4], 'text-allow-overlap': false,
+      }, paint: { 'text-color': ['get','color'], 'text-halo-color': '#000', 'text-halo-width': 1, 'text-opacity': 0.85 }});
+
 
       setMapReady(true);
       // Dev-only handle. The map is otherwise unreachable from the console,
@@ -993,7 +1010,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     // these, and to nothing else — the basemap is not a click target.
     const CLICKABLE_LAYERS = new Set(['conflict-icons','cctv-dots','eq-circles','fires-heat',
       'gdelt-dots','weather-dots','infra-dots','maritime-dots','choke-dots','news-dots',
-      'balloon-dots','rad-dots','ship-dots','sweep-device-dots','scan-targets-dots',
+      'balloon-dots','rad-dots','ship-dots','sat-ship-dots','sweep-device-dots','scan-targets-dots',
       'sdk-sea','sdk-air','sdk-intel','malware-dots','cyber-heads','gdelt-events-dots',
       'cf-outage-dots','cf-attack-dots','flight-dots','military-dots','jet-dots','private-dots']);
 
@@ -1443,6 +1460,52 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         </div>
         <div><span style="color:#5C5A54;font-size:9px;">DESTINATION: </span><span style="color:#E8E6E0;font-size:9px;">${p.destination || 'UNKNOWN'}</span></div>
         <a href="https://www.marinetraffic.com/en/ais/details/ships/mmsi:${p.mmsi}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ OPEN SOURCE ↗ ]</a>
+      </div>`);
+    });
+
+    // ── Satellite Ships (MySQL AIS) — all DB fields ──
+    map.on('click', 'sat-ship-dots', e => {
+      if (!e.features?.length) return;
+      const p = e.features[0].properties as any;
+      const coords = (e.features[0].geometry as any).coordinates;
+      const color = p.color || '#26C6DA';
+
+      // Build a full-field table from raw DB row (snake_case keys)
+      const raw = p.raw || {};
+      const labelMap: Record<string, string> = {
+        id: 'ID', mmsi: 'MMSI', name: 'NAME', callsign: 'CALLSIGN',
+        status: 'STATUS', type: 'TYPE', destination: 'DESTINATION',
+        speed: 'SPEED (kn)', length: 'LENGTH (m)', width: 'WIDTH (m)',
+        draught: 'DRAUGHT (m)', dn: 'DN', updatetimestamp: 'UPDATE TS',
+        updatetime: 'UPDATE TIME', lat: 'LATITUDE', lon: 'LONGITUDE',
+      };
+
+      // Build grid rows for every non-null field in the DB row
+      const gridRows: string[] = [];
+      for (const [key, val] of Object.entries(raw)) {
+        if (val === null || val === undefined || val === '') continue;
+        const label = labelMap[key] || key.toUpperCase();
+        let displayVal: string;
+        if (key === 'updatetime' && val) {
+          try { displayVal = new Date(val).toLocaleString(); } catch { displayVal = String(val); }
+        } else {
+          displayVal = String(val);
+        }
+        gridRows.push(
+          `<div><span style="color:#5C5A54;font-size:9px;">${label}</span><br/><span style="color:#E8E6E0;font-family:monospace;font-size:10px;">${htmlEsc(displayVal)}</span></div>`
+        );
+      }
+
+      popup(coords, `<div style="${pStyle}border:1px solid ${color}60;box-shadow:inset 0 0 12px ${color}15;max-width:440px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${color}40;padding-bottom:6px;margin-bottom:8px;">
+          <div style="color:${color};font-size:12px;font-weight:700;letter-spacing:0.1em;">🛰️ [ SATELLITE SHIP ]</div>
+          <div style="color:#5C5A54;font-size:9px;">MMSI: ${htmlEsc(p.mmsi || '—')}</div>
+        </div>
+        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${htmlEsc(p.name || 'UNIDENTIFIED VESSEL')}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;margin-bottom:8px;background:rgba(0,0,0,0.3);padding:6px;border-radius:4px;max-height:300px;overflow-y:auto;">
+          ${gridRows.join('')}
+        </div>
+        <a href="https://www.marinetraffic.com/en/ais/details/ships/mmsi:${htmlEsc(p.mmsi || '')}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ MARINE TRAFFIC ↗ ]</a>
       </div>`);
     });
 
@@ -2003,6 +2066,18 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     setGeo('maritime-choke', activeLayers.maritime && data.maritime_chokepoints ? data.maritime_chokepoints.map((c: any) => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [c.lng, c.lat] }, properties: { name: c.name, traffic: c.traffic, risk: c.risk } })) : []);
     setGeo('maritime-ships', activeLayers.maritime && data.maritime_ships ? data.maritime_ships.map((s: any) => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [s.lng, s.lat] }, properties: { name: s.name || s.mmsi?.toString(), type: s.type || 'cargo', speed: s.speed, heading: s.heading, destination: s.destination, flag: s.flag } })) : []);
   }, [mapReady, data.maritime_ports, data.maritime_chokepoints, data.maritime_ships, activeLayers.maritime, setGeo]);
+
+  useEffect(() => {
+    if (!mapReady) return;
+    // API returns a ready-made FeatureCollection — push it directly.
+    const src = mapRef.current?.getSource('satellite-ships') as any;
+    if (!src) return;
+    if (activeLayers.satellite_ships && data.satellite_ships?.features) {
+      src.setData(data.satellite_ships);
+    } else {
+      src.setData(EMPTY_FC);
+    }
+  }, [mapReady, data.satellite_ships, activeLayers.satellite_ships]);
 
   useEffect(() => {
     if (!mapReady) return;
