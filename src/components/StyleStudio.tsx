@@ -87,7 +87,7 @@ function AutoSlider({ label, value, min, max, step, whenEnabled, onChange, forma
       <button
         onClick={() => onChange(auto ? whenEnabled : null)}
         aria-pressed={auto}
-        title={auto ? `${label}: following the app's own styling` : `${label}: overridden`}
+        title={auto ? `${label}：跟随应用默认样式` : `${label}：已覆盖`}
         className={`px-1.5 py-0.5 rounded text-[8px] font-mono tracking-wider border transition-colors shrink-0 ${
           auto
             ? 'border-[var(--border-active)] bg-[var(--gold-primary)]/15 text-[var(--gold-light)]'
@@ -161,8 +161,8 @@ function ResettableSwatch({ label, value, fallback, onChange }: {
     <div className="flex items-center gap-1.5">
       <button
         onClick={() => onChange(fallback)}
-        title={`Restore the default ${label.toLowerCase()}`}
-        aria-label={`Restore default ${label}`}
+        title={`恢复默认 ${label}`}
+        aria-label={`恢复默认 ${label}`}
         className={`w-5 h-5 rounded flex items-center justify-center transition-opacity ${
           changed ? 'text-white/35 hover:text-white/80 hover:bg-white/5' : 'opacity-0 pointer-events-none'
         }`}
@@ -289,31 +289,31 @@ function StyleStudio({ onClose, isMobile }: { onClose: () => void; isMobile?: bo
         WebkitBackdropFilter: 'blur(28px) saturate(1.2)',
       }}
       role="dialog"
-      aria-label="Style Studio"
+      aria-label="样式工作室"
     >
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/[0.07] shrink-0">
         <div className="flex flex-col">
-          <span className="text-[11px] font-mono tracking-[0.22em] uppercase text-[var(--gold-light)]">Style Studio</span>
-          <span className="text-[9px] font-mono tracking-[0.1em] uppercase text-white/25">Live UI tokens</span>
+          <span className="text-[11px] font-mono tracking-[0.22em] uppercase text-[var(--gold-light)]">样式工作室</span>
+          <span className="text-[9px] font-mono tracking-[0.1em] uppercase text-white/25">实时界面变量</span>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={paste} title="Paste a shared theme from the clipboard" aria-label="Paste theme" className="w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors">
+          <button onClick={paste} title="从剪贴板粘贴主题" aria-label="粘贴主题" className="w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors">
             <ClipboardPaste className="w-3.5 h-3.5" />
           </button>
-          <button onClick={copy} title="Copy this theme as JSON" aria-label="Copy theme" className="w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors">
+          <button onClick={copy} title="复制主题为 JSON" aria-label="复制主题" className="w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors">
             {copied ? <Check className="w-3.5 h-3.5 text-[var(--alert-green)]" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
-          <button onClick={reset} title="Reset to the active theme" aria-label="Reset" className="w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors">
+          <button onClick={reset} title="重置为当前主题" aria-label="重置" className="w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors">
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
-          <button onClick={onClose} title="Close" aria-label="Close Style Studio" className="w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors">
+          <button onClick={onClose} title="关闭" aria-label="关闭样式工作室" className="w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/5 transition-colors">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-2 flex flex-col gap-3">
-        <Section title="Preset">
+        <Section title="预设">
           <div className="grid grid-cols-3 gap-1 pt-1">
             {PRESETS.map(p => (
               <button
@@ -328,23 +328,23 @@ function StyleStudio({ onClose, isMobile }: { onClose: () => void; isMobile?: bo
           </div>
         </Section>
 
-        <Section title="Accent">
-          <Row label="Primary"><Swatch label="Primary accent" value={s.accent} onChange={v => set('accent', v)} /></Row>
-          <Row label="Secondary"><Swatch label="Secondary accent" value={s.accent2} onChange={v => set('accent2', v)} /></Row>
-          <Row label="Glow"><Slider label="Glow strength" value={s.glow} min={0} max={1} step={0.01} onChange={v => set('glow', v)} format={v => `${Math.round(v * 100)}%`} /></Row>
+        <Section title="主色">
+          <Row label="主色"><Swatch label="Primary accent" value={s.accent} onChange={v => set('accent', v)} /></Row>
+          <Row label="辅助色"><Swatch label="Secondary accent" value={s.accent2} onChange={v => set('accent2', v)} /></Row>
+          <Row label="发光"><Slider label="发光强度" value={s.glow} min={0} max={1} step={0.01} onChange={v => set('glow', v)} format={v => `${Math.round(v * 100)}%`} /></Row>
         </Section>
 
-        <Section title="Signal">
-          <Row label="Critical"><Swatch label="Critical colour" value={s.alertRed} onChange={v => set('alertRed', v)} /></Row>
-          <Row label="Warning"><Swatch label="Warning colour" value={s.alertOrange} onChange={v => set('alertOrange', v)} /></Row>
-          <Row label="Nominal"><Swatch label="Nominal colour" value={s.alertGreen} onChange={v => set('alertGreen', v)} /></Row>
-          <Row label="Info"><Swatch label="Info colour" value={s.alertBlue} onChange={v => set('alertBlue', v)} /></Row>
+        <Section title="信号">
+          <Row label="严重"><Swatch label="严重色" value={s.alertRed} onChange={v => set('alertRed', v)} /></Row>
+          <Row label="警告"><Swatch label="警告色" value={s.alertOrange} onChange={v => set('alertOrange', v)} /></Row>
+          <Row label="正常"><Swatch label="正常色" value={s.alertGreen} onChange={v => set('alertGreen', v)} /></Row>
+          <Row label="信息"><Swatch label="信息色" value={s.alertBlue} onChange={v => set('alertBlue', v)} /></Row>
         </Section>
 
-        <Section title="Map controls">
-          <Row label="Pan/zoom pad">
+        <Section title="地图控件">
+          <Row label="平移/缩放按钮">
             <Segmented
-              label="On-screen pan and zoom pad"
+              label="屏幕平移缩放按钮"
               options={ON_OFF}
               value={s.mapControls ? 'on' : 'off'}
               onChange={v => set('mapControls', v === 'on')}
@@ -352,57 +352,56 @@ function StyleStudio({ onClose, isMobile }: { onClose: () => void; isMobile?: bo
           </Row>
         </Section>
 
-        <Section title="Map layers">
-          <SubHead label="Cameras" />
-          <Row label="Dots &amp; labels"><ResettableSwatch label="Camera colour" value={s.map.cctv} fallback={MAP_DEFAULTS.cctv} onChange={v => setMap('cctv', v)} /></Row>
+        <Section title="地图图层">
+          <SubHead label="监控" />
+          <Row label="点位与标签"><ResettableSwatch label="监控颜色" value={s.map.cctv} fallback={MAP_DEFAULTS.cctv} onChange={v => setMap('cctv', v)} /></Row>
 
-          <SubHead label="Satellites" note="Default keeps each satellite's own mission colour. Change one and it takes over that whole category." />
-          <Row label="Comms"><ResettableSwatch label="Comms satellites" value={s.map.satComms} fallback={MAP_DEFAULTS.satComms} onChange={v => setMap('satComms', v)} /></Row>
-          <Row label="Military"><ResettableSwatch label="Military satellites" value={s.map.satMilitary} fallback={MAP_DEFAULTS.satMilitary} onChange={v => setMap('satMilitary', v)} /></Row>
-          <Row label="Navigation"><ResettableSwatch label="Navigation satellites" value={s.map.satNavigation} fallback={MAP_DEFAULTS.satNavigation} onChange={v => setMap('satNavigation', v)} /></Row>
-          <Row label="Earth obs"><ResettableSwatch label="Earth observation satellites" value={s.map.satEarth} fallback={MAP_DEFAULTS.satEarth} onChange={v => setMap('satEarth', v)} /></Row>
-          <Row label="Science"><ResettableSwatch label="Science satellites" value={s.map.satScience} fallback={MAP_DEFAULTS.satScience} onChange={v => setMap('satScience', v)} /></Row>
-          <Row label="Other"><ResettableSwatch label="Other satellites" value={s.map.satOther} fallback={MAP_DEFAULTS.satOther} onChange={v => setMap('satOther', v)} /></Row>
+          <SubHead label="卫星" note="默认保留各类卫星的任务色。修改后该类别统一使用新颜色。" />
+          <Row label="通信"><ResettableSwatch label="通信卫星" value={s.map.satComms} fallback={MAP_DEFAULTS.satComms} onChange={v => setMap('satComms', v)} /></Row>
+          <Row label="军事"><ResettableSwatch label="军事卫星" value={s.map.satMilitary} fallback={MAP_DEFAULTS.satMilitary} onChange={v => setMap('satMilitary', v)} /></Row>
+          <Row label="导航"><ResettableSwatch label="导航卫星" value={s.map.satNavigation} fallback={MAP_DEFAULTS.satNavigation} onChange={v => setMap('satNavigation', v)} /></Row>
+          <Row label="对地观测"><ResettableSwatch label="对地观测卫星" value={s.map.satEarth} fallback={MAP_DEFAULTS.satEarth} onChange={v => setMap('satEarth', v)} /></Row>
+          <Row label="科学"><ResettableSwatch label="科学卫星" value={s.map.satScience} fallback={MAP_DEFAULTS.satScience} onChange={v => setMap('satScience', v)} /></Row>
+          <Row label="其他"><ResettableSwatch label="其他卫星" value={s.map.satOther} fallback={MAP_DEFAULTS.satOther} onChange={v => setMap('satOther', v)} /></Row>
 
-          <SubHead label="Aircraft" />
-          <Row label="Civil"><ResettableSwatch label="Civil aircraft" value={s.map.flightCivil} fallback={MAP_DEFAULTS.flightCivil} onChange={v => setMap('flightCivil', v)} /></Row>
-          <Row label="Private"><ResettableSwatch label="Private aircraft" value={s.map.flightPrivate} fallback={MAP_DEFAULTS.flightPrivate} onChange={v => setMap('flightPrivate', v)} /></Row>
-          <Row label="Government"><ResettableSwatch label="Government aircraft" value={s.map.flightGov} fallback={MAP_DEFAULTS.flightGov} onChange={v => setMap('flightGov', v)} /></Row>
-          <Row label="Military"><ResettableSwatch label="Military aircraft" value={s.map.flightMilitary} fallback={MAP_DEFAULTS.flightMilitary} onChange={v => setMap('flightMilitary', v)} /></Row>
-          <Row label="Unknown"><ResettableSwatch label="Unknown aircraft" value={s.map.flightUnknown} fallback={MAP_DEFAULTS.flightUnknown} onChange={v => setMap('flightUnknown', v)} /></Row>
+          <SubHead label="飞机" />
+          <Row label="民用"><ResettableSwatch label="民用飞机" value={s.map.flightCivil} fallback={MAP_DEFAULTS.flightCivil} onChange={v => setMap('flightCivil', v)} /></Row>
+          <Row label="私人"><ResettableSwatch label="私人飞机" value={s.map.flightPrivate} fallback={MAP_DEFAULTS.flightPrivate} onChange={v => setMap('flightPrivate', v)} /></Row>
+          <Row label="政府"><ResettableSwatch label="政府飞机" value={s.map.flightGov} fallback={MAP_DEFAULTS.flightGov} onChange={v => setMap('flightGov', v)} /></Row>
+          <Row label="军用"><ResettableSwatch label="军用飞机" value={s.map.flightMilitary} fallback={MAP_DEFAULTS.flightMilitary} onChange={v => setMap('flightMilitary', v)} /></Row>
+          <Row label="未知"><ResettableSwatch label="未知飞机" value={s.map.flightUnknown} fallback={MAP_DEFAULTS.flightUnknown} onChange={v => setMap('flightUnknown', v)} /></Row>
         </Section>
 
-        <Section title="Surface">
-          <Row label="Background"><Swatch label="Background colour" value={s.bg} onChange={setBg} /></Row>
-          <Row label="Panel"><Slider label="Panel opacity" value={s.panelAlpha} min={0.2} max={1} step={0.01} onChange={v => set('panelAlpha', v)} format={v => `${Math.round(v * 100)}%`} /></Row>
-          <Row label="Border"><Slider label="Border strength" value={s.borderAlpha} min={0} max={0.6} step={0.01} onChange={v => set('borderAlpha', v)} format={v => `${Math.round(v * 100)}%`} /></Row>
-          <Row label="Blur"><AutoSlider label="Backdrop blur" value={s.blur} min={0} max={64} step={1} whenEnabled={24} onChange={v => set('blur', v)} format={v => `${v}px`} /></Row>
-          <Row label="Radius"><Slider label="Corner radius" value={s.radius} min={0} max={2.5} step={0.05} onChange={v => set('radius', v)} format={v => `${v.toFixed(2)}x`} /></Row>
+        <Section title="外观">
+          <Row label="背景"><Swatch label="背景色" value={s.bg} onChange={setBg} /></Row>
+          <Row label="面板"><Slider label="面板透明度" value={s.panelAlpha} min={0.2} max={1} step={0.01} onChange={v => set('panelAlpha', v)} format={v => `${Math.round(v * 100)}%`} /></Row>
+          <Row label="边框"><Slider label="边框强度" value={s.borderAlpha} min={0} max={0.6} step={0.01} onChange={v => set('borderAlpha', v)} format={v => `${Math.round(v * 100)}%`} /></Row>
+          <Row label="模糊"><AutoSlider label="背景模糊" value={s.blur} min={0} max={64} step={1} whenEnabled={24} onChange={v => set('blur', v)} format={v => `${v}px`} /></Row>
+          <Row label="圆角"><Slider label="圆角" value={s.radius} min={0} max={2.5} step={0.05} onChange={v => set('radius', v)} format={v => `${v.toFixed(2)}x`} /></Row>
         </Section>
 
-        <Section title="Text">
-          <Row label="Primary"><Swatch label="Primary text" value={s.textPrimary} onChange={v => set('textPrimary', v)} /></Row>
-          <Row label="Secondary"><Swatch label="Secondary text" value={s.textSecondary} onChange={v => set('textSecondary', v)} /></Row>
-          <Row label="Muted"><Swatch label="Muted text" value={s.textMuted} onChange={v => set('textMuted', v)} /></Row>
-          <Row label="Heading"><Swatch label="Heading text" value={s.textHeading} onChange={v => set('textHeading', v)} /></Row>
+        <Section title="文字">
+          <Row label="主文字"><Swatch label="主文字" value={s.textPrimary} onChange={v => set('textPrimary', v)} /></Row>
+          <Row label="次文字"><Swatch label="次文字" value={s.textSecondary} onChange={v => set('textSecondary', v)} /></Row>
+          <Row label="弱化"><Swatch label="弱化文字" value={s.textMuted} onChange={v => set('textMuted', v)} /></Row>
+          <Row label="标题"><Swatch label="标题文字" value={s.textHeading} onChange={v => set('textHeading', v)} /></Row>
         </Section>
 
-        <Section title="Typography">
-          <Row label="UI font"><Segmented label="UI font" options={FONT_UI} value={s.fontUi} onChange={v => set('fontUi', v)} /></Row>
-          <Row label="Mono font"><Segmented label="Mono font" options={FONT_MONO} value={s.fontMono} onChange={v => set('fontMono', v)} /></Row>
-          <Row label="Tracking"><AutoSlider label="Mono tracking" value={s.tracking} min={-0.05} max={0.4} step={0.005} whenEnabled={0.2} onChange={v => set('tracking', v)} format={v => `${v.toFixed(2)}em`} /></Row>
+        <Section title="字体">
+          <Row label="UI 字体"><Segmented label="UI font" options={FONT_UI} value={s.fontUi} onChange={v => set('fontUi', v)} /></Row>
+          <Row label="等宽字体"><Segmented label="Mono font" options={FONT_MONO} value={s.fontMono} onChange={v => set('fontMono', v)} /></Row>
+          <Row label="字距"><AutoSlider label="等宽字距" value={s.tracking} min={-0.05} max={0.4} step={0.005} whenEnabled={0.2} onChange={v => set('tracking', v)} format={v => `${v.toFixed(2)}em`} /></Row>
         </Section>
 
-        <Section title="Motion & FX">
-          <Row label="Speed"><Slider label="Motion speed" value={s.motion} min={0} max={2} step={0.05} onChange={v => set('motion', v)} format={v => (v === 0 ? 'off' : `${v.toFixed(2)}x`)} /></Row>
-          <Row label="Scanlines"><Slider label="Scanline overlay" value={s.scanlines} min={0} max={0.2} step={0.005} onChange={v => set('scanlines', v)} format={v => (v === 0 ? 'off' : `${Math.round(v * 500)}%`)} /></Row>
-          <Row label="Grain"><Slider label="Film grain overlay" value={s.grain} min={0} max={0.3} step={0.005} onChange={v => set('grain', v)} format={v => (v === 0 ? 'off' : `${Math.round(v * 333)}%`)} /></Row>
-          <Row label="Vignette"><Slider label="Edge vignette" value={s.vignette} min={0} max={1} step={0.01} onChange={v => set('vignette', v)} format={v => (v === 0 ? 'off' : `${Math.round(v * 100)}%`)} /></Row>
+        <Section title="动效与特效">
+          <Row label="速度"><Slider label="动效速度" value={s.motion} min={0} max={2} step={0.05} onChange={v => set('motion', v)} format={v => (v === 0 ? 'off' : `${v.toFixed(2)}x`)} /></Row>
+          <Row label="扫描线"><Slider label="扫描线叠加" value={s.scanlines} min={0} max={0.2} step={0.005} onChange={v => set('scanlines', v)} format={v => (v === 0 ? 'off' : `${Math.round(v * 500)}%`)} /></Row>
+          <Row label="噪点"><Slider label="胶片噪点叠加" value={s.grain} min={0} max={0.3} step={0.005} onChange={v => set('grain', v)} format={v => (v === 0 ? 'off' : `${Math.round(v * 333)}%`)} /></Row>
+          <Row label="暗角"><Slider label="边缘暗角" value={s.vignette} min={0} max={1} step={0.01} onChange={v => set('vignette', v)} format={v => (v === 0 ? 'off' : `${Math.round(v * 100)}%`)} /></Row>
         </Section>
 
         <p className="text-[9px] font-mono leading-relaxed text-white/20 pt-1 pb-1">
-          Saved to this browser. AUTO leaves the app&apos;s own styling alone, and presets do not touch the map
-          layers &mdash; those carry meaning, not just a look. Reset restores the active theme.
+          设置保存在本浏览器中。AUTO 保留应用默认样式，预设不会修改地图图层（它们承载语义，不仅仅是外观）。重置恢复当前主题。
         </p>
       </div>
     </motion.div>,

@@ -3103,10 +3103,10 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       {startupStatus !== 'ready' && (
         <div className="absolute inset-0 z-[10] flex items-center justify-center pointer-events-none">
           <div role="status" className="pointer-events-auto max-w-[min(360px,85vw)] rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/95 p-5 text-center shadow-lg">
-            <p className="text-sm text-[var(--text-primary)]">{startupStatus === 'loading' ? 'Loading map…' : 'The map couldn’t finish loading'}</p>
+            <p className="text-sm text-[var(--text-primary)]">{startupStatus === 'loading' ? '地图加载中…' : '地图未能完成加载'}</p>
             {startupStatus === 'error' && <>
-              <p className="mt-2 text-xs text-[var(--text-secondary)]">A map request or graphics connection failed. Your dashboard is still available.</p>
-              <button type="button" onClick={onRetryMap} className="mt-4 rounded-md border border-[var(--border-primary)] px-4 py-2 text-xs text-[var(--gold-primary)] hover:bg-[var(--hover-accent)]">Retry map</button>
+              <p className="mt-2 text-xs text-[var(--text-secondary)]">地图请求或图形连接失败，仪表板仍然可用。</p>
+              <button type="button" onClick={onRetryMap} className="mt-4 rounded-md border border-[var(--border-primary)] px-4 py-2 text-xs text-[var(--gold-primary)] hover:bg-[var(--hover-accent)]">重试地图</button>
             </>}
           </div>
         </div>
