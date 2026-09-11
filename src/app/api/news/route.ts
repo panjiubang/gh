@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { translateArrayFields } from '@/lib/translate';
 
 /**
  * OSIRIS — Military-Grade Intelligence API
@@ -154,6 +155,9 @@ export async function GET() {
         machine_assessment: riskScore >= 8 ? "AI Analysis indicates elevated tactical priority based on OSINT stream patterns." : null,
       };
     });
+
+    // 翻译新闻标题和描述
+    await translateArrayFields(newsItems, ['title', 'description']);
 
     newsItems.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
 

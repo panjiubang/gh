@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback, useEffect, memo } from 'react';
 import { createPortal } from 'react-dom';
@@ -20,11 +20,11 @@ import ChainBrief from '@/components/ChainBrief';
  * the toolkit scannable by what you are investigating.
  */
 const GROUPS = [
-  { id: 'network', label: 'NETWORK & HOST', hint: 'IPs, ports, routing, hardware' },
-  { id: 'domain', label: 'DOMAIN & WEB', hint: 'DNS, certificates, site fingerprinting' },
-  { id: 'identity', label: 'IDENTITY', hint: 'People, handles, accounts' },
-  { id: 'threat', label: 'THREAT & EXPOSURE', hint: 'Reputation and breach data' },
-  { id: 'chain', label: 'BLOCKCHAIN', hint: 'Wallets and on-chain incidents' },
+  { id: 'network', label: '网络与主机', hint: 'IP、端口、路由、硬件' },
+  { id: 'domain', label: '域名与网站', hint: 'DNS、证书、站点指纹' },
+  { id: 'identity', label: '身份追踪', hint: '人员、账号、用户名' },
+  { id: 'threat', label: '威胁与泄露', hint: '信誉与泄露数据' },
+  { id: 'chain', label: '链上情报', hint: '钱包与链上事件' },
 ] as const;
 
 type GroupId = (typeof GROUPS)[number]['id'];
@@ -41,30 +41,30 @@ interface ToolDef {
 }
 
 const TABS: ToolDef[] = [
-  { id: 'scanner', label: 'PORT SCAN', icon: Radar, placeholder: 'IP or hostname', color: '#00E5FF', group: 'network', blurb: 'Open ports and running services' },
-  { id: 'vuln', label: 'VULN SWEEP', icon: Bug, placeholder: 'IP or hostname', color: '#FF3D3D', group: 'network', blurb: 'Known CVEs affecting the host' },
-  { id: 'shodan', label: 'SHODAN IOT', icon: Network, placeholder: 'IP address', color: '#FF3D3D', group: 'network', blurb: 'Internet-exposed device record' },
-  { id: 'bgp', label: 'BGP ROUTE', icon: Globe, placeholder: 'IP or ASN', color: '#00E5FF', group: 'network', blurb: 'Autonomous system and prefixes' },
-  { id: 'mac', label: 'MAC ADDR', icon: Fingerprint, placeholder: 'MAC address', color: '#FFD700', group: 'network', blurb: 'Hardware vendor lookup' },
-  { id: 'sweep', label: 'IP SWEEP', icon: Crosshair, placeholder: 'Enter IP address (e.g. 8.8.8.8)', color: '#FF3D3D', group: 'network', blurb: 'Scan an entire subnet' },
+  { id: 'scanner', label: '端口扫描', icon: Radar, placeholder: 'IP 或主机名', color: '#00E5FF', group: 'network', blurb: '开放端口与运行服务' },
+  { id: 'vuln', label: '漏洞扫描', icon: Bug, placeholder: 'IP 或主机名', color: '#FF3D3D', group: 'network', blurb: '已知 CVE 漏洞' },
+  { id: 'shodan', label: 'Shodan IoT', icon: Network, placeholder: 'IP 地址', color: '#FF3D3D', group: 'network', blurb: '暴露在互联网的设备记录' },
+  { id: 'bgp', label: 'BGP 路由', icon: Globe, placeholder: 'IP 或 ASN', color: '#00E5FF', group: 'network', blurb: '自治系统与前缀' },
+  { id: 'mac', label: 'MAC 地址', icon: Fingerprint, placeholder: 'MAC 地址', color: '#FFD700', group: 'network', blurb: '硬件厂商查询' },
+  { id: 'sweep', label: 'IP 扫描', icon: Crosshair, placeholder: '输入 IP 地址 (如 8.8.8.8)', color: '#FF3D3D', group: 'network', blurb: '扫描整个子网' },
 
-  { id: 'dns', label: 'DNS', icon: Server, placeholder: 'Domain name', color: '#448AFF', group: 'domain', blurb: 'All record types' },
-  { id: 'whois', label: 'WHOIS', icon: FileText, placeholder: 'Domain name', color: '#FFD700', group: 'domain', blurb: 'Registrar and ownership' },
-  { id: 'certs', label: 'CERTS', icon: Lock, placeholder: 'Domain name', color: '#E040FB', group: 'domain', blurb: 'Certificate transparency log' },
-  { id: 'ssl', label: 'SSL/TLS', icon: Shield, placeholder: 'Domain name', color: '#76FF03', group: 'domain', blurb: 'Cipher and certificate health' },
-  { id: 'subdomains', label: 'SUBDOMAINS', icon: Layers, placeholder: 'Domain to enumerate', color: '#00BCD4', group: 'domain', blurb: 'Enumerate attack surface' },
-  { id: 'headers', label: 'HEADERS', icon: Code, placeholder: 'URL to inspect', color: '#87CEEB', group: 'domain', blurb: 'Security headers audit' },
-  { id: 'tech', label: 'TECH DETECT', icon: Code, placeholder: 'URL to fingerprint', color: '#9C27B0', group: 'domain', blurb: 'Frameworks and stack' },
+  { id: 'dns', label: 'DNS', icon: Server, placeholder: '域名', color: '#448AFF', group: 'domain', blurb: '所有记录类型' },
+  { id: 'whois', label: 'WHOIS', icon: FileText, placeholder: '域名', color: '#FFD700', group: 'domain', blurb: '注册商与所有权' },
+  { id: 'certs', label: '证书', icon: Lock, placeholder: '域名', color: '#E040FB', group: 'domain', blurb: '证书透明日志' },
+  { id: 'ssl', label: 'SSL/TLS', icon: Shield, placeholder: '域名', color: '#76FF03', group: 'domain', blurb: '密码套件与证书健康' },
+  { id: 'subdomains', label: '子域名', icon: Layers, placeholder: '要枚举的域名', color: '#00BCD4', group: 'domain', blurb: '枚举攻击面' },
+  { id: 'headers', label: '响应头', icon: Code, placeholder: '要检查的 URL', color: '#87CEEB', group: 'domain', blurb: '安全响应头审计' },
+  { id: 'tech', label: '技术探测', icon: Code, placeholder: '要指纹识别的 URL', color: '#9C27B0', group: 'domain', blurb: '框架与技术栈' },
 
-  { id: 'username', label: 'USERNAME', icon: User, placeholder: 'Username / handle to hunt', color: '#00E676', group: 'identity', blurb: 'Hunt a handle across platforms' },
-  { id: 'github', label: 'GITHUB RECON', icon: Terminal, placeholder: 'GitHub username', color: '#87CEEB', group: 'identity', blurb: 'Profile, repos and contacts' },
-  { id: 'phone', label: 'PHONE INTEL', icon: Phone, placeholder: 'Phone number (e.g. +1...)', color: '#FF9500', group: 'identity', blurb: 'Carrier, region and line type' },
+  { id: 'username', label: '用户名', icon: User, placeholder: '要追踪的用户名', color: '#00E676', group: 'identity', blurb: '跨平台追踪用户名' },
+  { id: 'github', label: 'GitHub 侦察', icon: Terminal, placeholder: 'GitHub 用户名', color: '#87CEEB', group: 'identity', blurb: '个人资料、仓库与联系方式' },
+  { id: 'phone', label: '电话情报', icon: Phone, placeholder: '电话号码 (如 +1...)', color: '#FF9500', group: 'identity', blurb: '运营商、地区与线路类型' },
 
-  { id: 'threats', label: 'THREATS', icon: AlertTriangle, placeholder: 'IP, domain, or hash', color: '#FF9500', group: 'threat', blurb: 'Reputation across feeds' },
-  { id: 'leaks', label: 'DATA LEAKS', icon: ShieldAlert, placeholder: 'Email address', color: '#E040FB', group: 'threat', blurb: 'Breach exposure for an address' },
-  { id: 'infostealer', label: 'INFOSTEALER', icon: Skull, placeholder: 'Email, domain, username or phone', color: '#FF1744', group: 'threat', blurb: 'Hudson Rock malware-compromised assets' },
+  { id: 'threats', label: '威胁情报', icon: AlertTriangle, placeholder: 'IP、域名或哈希', color: '#FF9500', group: 'threat', blurb: '跨情报源信誉查询' },
+  { id: 'leaks', label: '数据泄露', icon: ShieldAlert, placeholder: '邮箱地址', color: '#E040FB', group: 'threat', blurb: '邮箱泄露记录查询' },
+  { id: 'infostealer', label: '恶意信息窃取', icon: Skull, placeholder: '邮箱、域名、用户名或电话', color: '#FF1744', group: 'threat', blurb: 'Hudson Rock 恶意软件泄露资产' },
 
-  { id: 'crypto', label: 'CHAIN INTEL', icon: Bitcoin, placeholder: 'BTC, ETH or SOL wallet address', color: '#F7931A', group: 'chain', blurb: 'Wallet forensics and daily brief' },
+  { id: 'crypto', label: '链上情报', icon: Bitcoin, placeholder: 'BTC、ETH 或 SOL 钱包地址', color: '#F7931A', group: 'chain', blurb: '钱包取证与每日简报' },
 ];
 
 interface OsintPanelProps { isOpen?: boolean; onClose?: () => void; isMobile?: boolean; onSweepVisualize?: (data: any) => void; onScanGeolocate?: (target: string, data: any) => void; }
@@ -83,7 +83,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
   const [sweepProgress, setSweepProgress] = useState<{ current: number; total: number } | null>(null);
   const [sweepCidr, setSweepCidr] = useState(24);
   const [cveCache, setCveCache] = useState<Record<string, any>>({});
-  // CHAIN INTEL carries two views: the daily brief needs no target, the wallet
+  // 链上情报 carries two views: the daily brief needs no target, the wallet
   // lookup uses the shared query bar.
   const [chainView, setChainView] = useState<'brief' | 'wallet'>('brief');
   /** Free-text filter over the toolkit — 19 modules is too many to scan. */
@@ -156,20 +156,20 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
             onScanGeolocate(geo.query || 'local', {
               lat: geo.lat,
               lng: geo.lon,
-              city: geo.city || 'Unknown',
-              country: geo.country || 'Unknown',
-              isp: geo.isp || 'Unknown',
-              org: geo.org || 'Unknown',
-              as: geo.as || 'Unknown',
+              city: geo.city || '未知',
+              country: geo.country || '未知',
+              isp: geo.isp || '未知',
+              org: geo.org || '未知',
+              as: geo.as || '未知',
               type: 'self_track'
             });
           } else {
-            setError("Could not retrieve your IP location.");
+            setError("无法获取您的 IP 位置。");
           }
         })
         .catch(err => {
           setLoading(false);
-          setError("Network error: " + err.message);
+          setError("网络错误：" + err.message);
         });
     };
 
@@ -273,7 +273,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
       }
       const res = await fetch(url, activeTab === 'shodan' ? { cache: 'no-store' } : undefined);
       if (activeTab === 'shodan' && res.status === 404) {
-        setResults({ ip: query, status: 'No Shodan InternetDB records found', ports: [], cpes: [], hostnames: [], tags: [], vulns: [] });
+        setResults({ ip: query, status: '未找到 Shodan InternetDB 记录', ports: [], cpes: [], hostnames: [], tags: [], vulns: [] });
         setLoading(false);
         return;
       }
@@ -327,9 +327,9 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
             .catch(() => {});
         }
       } else {
-        setError(data.error || 'Lookup failed');
+        setError(data.error || '查询失败');
       }
-    } catch { setError('Network error'); }
+    } catch { setError('网络错误'); }
     finally { setLoading(false); }
   }, [query, activeTab, scanType, loading, sweepCidr]);
 
@@ -416,7 +416,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'crypto' && chainView === 'brief') {
       return (
         <div>
-          <SectionHeader title="CHAIN INTEL — DAILY BRIEF" icon={Bitcoin} color="#F7931A" />
+          <SectionHeader title="链上情报 — 每日简报" icon={Bitcoin} color="#F7931A" />
           <ChainBrief />
         </div>
       );
@@ -430,13 +430,13 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
       const host = r.host || r.target || query;
       return (
         <div>
-          <SectionHeader title="HOST INFO" icon={Server} color="#00E5FF" />
-          <ResultRow label="Target" value={host} color="#00E5FF" />
-          <ResultRow label="Scan Type" value={r.scan_type || scanType} />
-          <ResultRow label="Duration" value={r.duration || r.scan_time} />
+          <SectionHeader title="主机信息" icon={Server} color="#00E5FF" />
+          <ResultRow label="目标" value={host} color="#00E5FF" />
+          <ResultRow label="扫描类型" value={r.scan_type || scanType} />
+          <ResultRow label="耗时" value={r.duration || r.scan_time} />
           {Array.isArray(ports) && ports.length > 0 && (
             <>
-              <SectionHeader title={`OPEN PORTS (${ports.length})`} icon={Wifi} color="#00E676" />
+              <SectionHeader title={`开放端口 (${ports.length})`} icon={Wifi} color="#00E676" />
               <div className="space-y-0.5">
                 {ports.map((p: any, i: number) => (
                   <PortRow key={i} port={p.port || p} state={p.state || 'open'} service={p.service || p.name} version={p.version} />
@@ -457,10 +457,10 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
       
       return (
         <div>
-          <SectionHeader title="VULNERABILITY ASSESSMENT" icon={Bug} color="#FF3D3D" />
-          <ResultRow label="Target" value={r.target || query} color="#FF3D3D" />
-          <ResultRow label="Total CVEs" value={Array.isArray(vulns) ? vulns.length : 0} color={Array.isArray(vulns) && vulns.length > 0 ? '#FF3D3D' : '#00E676'} />
-          <ResultRow label="Risk Level" value={r.risk_level || r.severity} />
+          <SectionHeader title="漏洞评估" icon={Bug} color="#FF3D3D" />
+          <ResultRow label="目标" value={r.target || query} color="#FF3D3D" />
+          <ResultRow label="CVE 总数" value={Array.isArray(vulns) ? vulns.length : 0} color={Array.isArray(vulns) && vulns.length > 0 ? '#FF3D3D' : '#00E676'} />
+          <ResultRow label="风险等级" value={r.risk_level || r.severity} />
           {Array.isArray(regularVulns) && regularVulns.length > 0 && (
             <div className="mt-2 space-y-1">
               {regularVulns.slice(0, 20).map((v: any, i: number) => (
@@ -478,7 +478,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
           
           {exploits.length > 0 && (
             <div className="mt-4">
-              <SectionHeader title={`POSSIBLE EXPLOITS (${exploits.length})`} icon={AlertTriangle} color="#FF9500" />
+              <SectionHeader title={`可能的利用 (${exploits.length})`} icon={AlertTriangle} color="#FF9500" />
               <div className="mt-2 space-y-1">
                 {exploits.slice(0, 10).map((e: any, i: number) => (
                   <div key={i} className="p-2 rounded-lg border border-orange-500/30 bg-orange-500/10 flex flex-col">
@@ -507,8 +507,8 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'dns') {
       return (
         <div>
-          <SectionHeader title="DNS RECORDS" icon={Server} color="#448AFF" />
-          <ResultRow label="Domain" value={r.domain || query} color="#448AFF" />
+          <SectionHeader title="DNS 记录" icon={Server} color="#448AFF" />
+          <ResultRow label="域名" value={r.domain || query} color="#448AFF" />
           {r.A && <ResultRow label="A Records" value={Array.isArray(r.A) ? r.A.join(', ') : r.A} />}
           {r.AAAA && <ResultRow label="AAAA" value={Array.isArray(r.AAAA) ? r.AAAA.join(', ') : r.AAAA} />}
           {r.MX && <ResultRow label="MX" value={Array.isArray(r.MX) ? r.MX.map((m:any) => m.exchange || m).join(', ') : r.MX} />}
@@ -525,15 +525,15 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'whois') {
       return (
         <div>
-          <SectionHeader title="WHOIS INTELLIGENCE" icon={FileText} color="#FFD700" />
+          <SectionHeader title="WHOIS 情报" icon={FileText} color="#FFD700" />
           <SanctionsBadge match={r.sanctions_match} />
-          <ResultRow label="Domain" value={r.domain_name || r.domainName || query} color="#FFD700" />
-          <ResultRow label="Registrar" value={r.registrar} />
-          <ResultRow label="Created" value={r.creation_date || r.createdDate} />
-          <ResultRow label="Expires" value={r.expiration_date || r.expiresDate} />
-          <ResultRow label="Updated" value={r.updated_date || r.updatedDate} />
-          <ResultRow label="Status" value={Array.isArray(r.status) ? r.status.join(', ') : r.status} />
-          <ResultRow label="Nameservers" value={Array.isArray(r.name_servers || r.nameServers) ? (r.name_servers || r.nameServers).join(', ') : r.name_servers} />
+          <ResultRow label="域名" value={r.domain_name || r.domainName || query} color="#FFD700" />
+          <ResultRow label="注册商" value={r.registrar} />
+          <ResultRow label="创建时间" value={r.creation_date || r.createdDate} />
+          <ResultRow label="到期时间" value={r.expiration_date || r.expiresDate} />
+          <ResultRow label="更新时间" value={r.updated_date || r.updatedDate} />
+          <ResultRow label="状态" value={Array.isArray(r.status) ? r.status.join(', ') : r.status} />
+          <ResultRow label="名称服务器" value={Array.isArray(r.name_servers || r.nameServers) ? (r.name_servers || r.nameServers).join(', ') : r.name_servers} />
           {renderFallbackExcluding(['domain_name','domainName','registrar','creation_date','createdDate','expiration_date','expiresDate','updated_date','updatedDate','status','name_servers','nameServers','timestamp','cached','raw','sanctions_match'])}
         </div>
       );
@@ -543,11 +543,11 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'shodan') {
       return (
         <div>
-          <SectionHeader title="SHODAN IOT INTELLIGENCE" icon={Network} color="#FF3D3D" />
-          <ResultRow label="Target IP" value={r.ip || query} color="#FF3D3D" />
-          {r.hostnames?.length > 0 && <ResultRow label="Hostnames" value={r.hostnames.join(', ')} />}
-          {r.ports?.length > 0 && <ResultRow label="Open Ports" value={r.ports.join(', ')} color="#00E5FF" />}
-          {r.tags?.length > 0 && <ResultRow label="Tags" value={r.tags.join(', ')} color="#FF9500" />}
+          <SectionHeader title="Shodan IoT 情报" icon={Network} color="#FF3D3D" />
+          <ResultRow label="目标 IP" value={r.ip || query} color="#FF3D3D" />
+          {r.hostnames?.length > 0 && <ResultRow label="主机名" value={r.hostnames.join(', ')} />}
+          {r.ports?.length > 0 && <ResultRow label="开放端口" value={r.ports.join(', ')} color="#00E5FF" />}
+          {r.tags?.length > 0 && <ResultRow label="标签" value={r.tags.join(', ')} color="#FF9500" />}
           {r.vulns?.length > 0 && (
             <div className="mt-2 p-2 border border-red-500/30 bg-red-500/10 rounded">
               <span className="text-[11px] font-mono text-red-400 font-bold mb-1 block">VULNERABILITIES ({r.vulns.length})</span>
@@ -568,16 +568,16 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'bgp') {
       return (
         <div>
-          <SectionHeader title="BGP ROUTING INTELLIGENCE" icon={Globe} color="#00E5FF" />
-          <ResultRow label="Query" value={r.query} color="#00E5FF" />
+          <SectionHeader title="BGP 路由情报" icon={Globe} color="#00E5FF" />
+          <ResultRow label="查询" value={r.query} color="#00E5FF" />
           {r.type === 'ip' && r.ip && (
             <>
               {r.ip.prefixes?.map((p: any, i: number) => (
                 <div key={i} className="mt-2 p-2 border border-[#00E5FF]/20 bg-[#00E5FF]/5 rounded">
                   <ResultRow label="ASN" value={`AS${p.asn.asn} - ${p.asn.name}`} color="#00E5FF" />
-                  <ResultRow label="Prefix" value={p.prefix} />
-                  <ResultRow label="Country" value={p.asn.country_code} />
-                  <ResultRow label="Description" value={p.asn.description} />
+                  <ResultRow label="前缀" value={p.prefix} />
+                  <ResultRow label="国家" value={p.asn.country_code} />
+                  <ResultRow label="描述" value={p.asn.description} />
                 </div>
               ))}
             </>
@@ -585,9 +585,9 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
           {r.type === 'asn' && r.asn && (
             <div className="mt-2 p-2 border border-[#00E5FF]/20 bg-[#00E5FF]/5 rounded">
               <ResultRow label="ASN" value={`AS${r.asn.asn}`} color="#00E5FF" />
-              <ResultRow label="Name" value={r.asn.name} />
-              <ResultRow label="Description" value={r.asn.description} />
-              <ResultRow label="Country" value={r.asn.country_code} />
+              <ResultRow label="名称" value={r.asn.name} />
+              <ResultRow label="描述" value={r.asn.description} />
+              <ResultRow label="国家" value={r.asn.country_code} />
               {r.prefixes && <ResultRow label="Prefixes" value={`IPv4: ${r.prefixes.total_v4} | IPv6: ${r.prefixes.total_v6}`} />}
               {r.peers && <ResultRow label="Peers" value={r.peers.total} />}
             </div>
@@ -601,9 +601,9 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'mac') {
       return (
         <div>
-          <SectionHeader title="MAC VENDOR LOOKUP" icon={Fingerprint} color="#FFD700" />
-          <ResultRow label="MAC Address" value={r.mac} color="#FFD700" />
-          <ResultRow label="Vendor" value={r.vendor} color={r.vendor === 'Not Found' ? '#FF3D3D' : '#00E676'} />
+          <SectionHeader title="MAC 厂商查询" icon={Fingerprint} color="#FFD700" />
+          <ResultRow label="MAC 地址" value={r.mac} color="#FFD700" />
+          <ResultRow label="厂商" value={r.vendor} color={r.vendor === 'Not Found' ? '#FF3D3D' : '#00E676'} />
         </div>
       );
     }
@@ -612,16 +612,16 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'phone') {
       return (
         <div>
-          <SectionHeader title="PHONE INTELLIGENCE" icon={Phone} color="#FF9500" />
-          <ResultRow label="Query" value={r.query} color="#FF9500" />
-          <ResultRow label="Valid" value={r.valid ? 'YES' : 'NO'} color={r.valid ? '#00E676' : '#FF3D3D'} />
+          <SectionHeader title="电话情报" icon={Phone} color="#FF9500" />
+          <ResultRow label="查询" value={r.query} color="#FF9500" />
+          <ResultRow label="有效" value={r.valid ? 'YES' : 'NO'} color={r.valid ? '#00E676' : '#FF3D3D'} />
           {r.valid && (
             <>
-              <ResultRow label="E.164 Format" value={r.number} />
-              <ResultRow label="Intl Format" value={r.international} />
-              <ResultRow label="Nat Format" value={r.national} />
-              <ResultRow label="Country" value={`${r.region} (${r.country_code})`} />
-              <ResultRow label="Line Type" value={r.line_type} color={r.line_type === 'MOBILE' ? '#00E5FF' : r.line_type === 'VOIP' ? '#FF9500' : undefined} />
+              <ResultRow label="E.164 格式" value={r.number} />
+              <ResultRow label="国际格式" value={r.international} />
+              <ResultRow label="国内格式" value={r.national} />
+              <ResultRow label="国家" value={`${r.region} (${r.country_code})`} />
+              <ResultRow label="线路类型" value={r.line_type} color={r.line_type === 'MOBILE' ? '#00E5FF' : r.line_type === 'VOIP' ? '#FF9500' : undefined} />
             </>
           )}
         </div>
@@ -632,7 +632,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'github') {
       return (
         <div>
-          <SectionHeader title="GITHUB RECON" icon={Terminal} color="#87CEEB" />
+          <SectionHeader title="GitHub 侦察" icon={Terminal} color="#87CEEB" />
           <div className="flex items-center gap-3 mb-2">
             {r.avatar_url && <img src={r.avatar_url} alt="avatar" className="w-10 h-10 rounded-full border border-[#87CEEB]/30" />}
             <div>
@@ -640,12 +640,12 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
               <div className="text-[10px] font-mono text-[var(--text-muted)]">@{r.username} • {r.followers} followers</div>
             </div>
           </div>
-          <ResultRow label="Company" value={r.company} />
-          <ResultRow label="Location" value={r.location} />
-          <ResultRow label="Email" value={r.email} color="#00E676" />
+          <ResultRow label="公司" value={r.company} />
+          <ResultRow label="位置" value={r.location} />
+          <ResultRow label="邮箱" value={r.email} color="#00E676" />
           <ResultRow label="Twitter" value={r.twitter} color="#448AFF" />
-          <ResultRow label="Website" value={r.blog} />
-          <ResultRow label="Bio" value={r.bio} />
+          <ResultRow label="网站" value={r.blog} />
+          <ResultRow label="简介" value={r.bio} />
           {r.recent_repos?.length > 0 && (
             <div className="mt-2 p-2 border border-[#87CEEB]/20 bg-[#87CEEB]/5 rounded">
               <span className="text-[10px] font-mono text-[#87CEEB] block mb-1">RECENT REPOS</span>
@@ -661,14 +661,14 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
       );
     }
 
-    // ── USERNAME HUNT ──
+    // ── 用户名追踪 ──
     if (activeTab === 'username') {
       const ACCENT = '#00E676';
 
 
       return (
         <div>
-          <SectionHeader title="USERNAME HUNT" icon={User} color={ACCENT} />
+          <SectionHeader title="用户名追踪" icon={User} color={ACCENT} />
 
           <div className="grid grid-cols-4 gap-1.5 mb-2">
             {[
@@ -683,16 +683,16 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
               </div>
             ))}
           </div>
-          <ResultRow label="Handle" value={r.username} color={ACCENT} />
+          <ResultRow label="用户名" value={r.username} color={ACCENT} />
           <ResultRow
-            label="Coverage"
+            label="覆盖率"
             value={`${r.checked} of ${r.total_available} sites · ${r.not_found_count ?? 0} ruled out`}
           />
-          <ResultRow label="Elapsed" value={r.elapsed_ms ? `${(r.elapsed_ms / 1000).toFixed(1)}s` : null} />
+          <ResultRow label="耗时" value={r.elapsed_ms ? `${(r.elapsed_ms / 1000).toFixed(1)}s` : null} />
 
           {r.found?.length > 0 && (
             <>
-              <SectionHeader title={`CONFIRMED ACCOUNTS (${r.found.length})`} icon={CheckCircle} color={ACCENT} />
+              <SectionHeader title={`已确认账户 (${r.found.length})`} icon={CheckCircle} color={ACCENT} />
               {r.found.map((f: any, i: number) => (
                 <div key={i} className="flex items-center gap-2 py-1 text-[11px] font-mono">
                   <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: ACCENT }} />
@@ -711,7 +711,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
               they are never mistaken for real accounts. */}
           {r.inconclusive?.length > 0 && (
             <>
-              <SectionHeader title={`UNVERIFIABLE (${r.inconclusive.length})`} icon={AlertTriangle} color="#FF9500" />
+              <SectionHeader title={`无法验证 (${r.inconclusive.length})`} icon={AlertTriangle} color="#FF9500" />
               <div className="text-[10px] font-mono text-[var(--text-secondary)] leading-snug mb-1">
                 These sites answered &quot;exists&quot; for a random control handle too, so a hit here is not evidence of an account.
               </div>
@@ -732,7 +732,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
               must not be silently folded into "not found". */}
           {r.blocked?.length > 0 && (
             <>
-              <SectionHeader title={`BLOCKED — NOT CHECKED (${r.blocked.length})`} icon={ShieldAlert} color="#E040FB" />
+              <SectionHeader title={`已拦截 — 未检查 (${r.blocked.length})`} icon={ShieldAlert} color="#E040FB" />
               <div className="text-[10px] font-mono text-[var(--text-secondary)] leading-snug mb-1">
                 These sites refused the lookup, so nothing was learned either way — an account here is neither confirmed nor ruled out.
               </div>
@@ -751,7 +751,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
           {r.errors?.length > 0 && (
             <>
-              <SectionHeader title={`UNREACHABLE (${r.errors.length})`} icon={XCircle} color="#FF3D3D" />
+              <SectionHeader title={`无法访问 (${r.errors.length})`} icon={XCircle} color="#FF3D3D" />
               {r.errors.slice(0, 10).map((f: any, i: number) => (
                 <div key={i} className="flex items-center gap-2 py-0.5 text-[10px] font-mono">
                   <span className="w-[110px] flex-shrink-0 text-[#FF3D3D]">{f.site}</span>
@@ -763,7 +763,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
           {r.skipped?.length > 0 && (
             <>
-              <SectionHeader title={`NOT APPLICABLE (${r.skipped.length})`} icon={XCircle} color="#5C5A54" />
+              <SectionHeader title={`不适用 (${r.skipped.length})`} icon={XCircle} color="#5C5A54" />
               <div className="text-[10px] font-mono text-[var(--text-muted)] leading-snug">
                 {r.skipped.map((s: any) => s.site).join(', ')} — the handle does not meet these sites&apos; username rules.
               </div>
@@ -772,7 +772,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
           <div className="mt-3 text-[9px] font-mono text-[var(--text-muted)] leading-relaxed">
             {r.verified
-              ? 'Every positive re-tested against a random control handle; sites that accepted it are listed as unverifiable. Calibration catches most soft 404s but is not exhaustive — confirm before acting.'
+              ? 'Every positive re-tested against a random control handle; sites that accepted it are listed as 无法验证. Calibration catches most soft 404s but is not exhaustive — confirm before acting.'
               : 'Calibration disabled — positives are unfiltered and include soft 404s.'}
             <br />Source: {r.source}
           </div>
@@ -780,7 +780,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
       );
     }
 
-    // ── CHAIN INTEL ──
+    // ── 链上情报 ──
     // Shares /api/osint/crypto with the standalone CHAIN panel; this is the
     // in-toolkit view of the same wallet report.
     if (activeTab === 'crypto') {
@@ -797,7 +797,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
       return (
         <div>
-          <SectionHeader title="CHAIN INTEL" icon={Bitcoin} color={ACCENT} />
+          <SectionHeader title="链上情报" icon={Bitcoin} color={ACCENT} />
 
           {/* A sanctions hit dominates the report — surface it before anything else. */}
           {r.sanctions?.hit && (
@@ -827,23 +827,23 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
             </span>
           </div>
 
-          <ResultRow label="Address" value={r.address} color={ACCENT} />
-          <ResultRow label="Balance" value={`${fmt(r.balance?.native, 8)} ${r.symbol}`} color="#00E676" />
+          <ResultRow label="地址" value={r.address} color={ACCENT} />
+          <ResultRow label="余额" value={`${fmt(r.balance?.native, 8)} ${r.symbol}`} color="#00E676" />
           <ResultRow
-            label="Value (USD)"
+            label="价值 (USD)"
             value={r.balance?.usd != null ? `$${fmt(r.balance.usd, 2)}` : 'price unavailable'}
           />
-          <ResultRow label="Spot price" value={r.balance?.price_usd != null ? `$${fmt(r.balance.price_usd, 2)}` : null} />
-          <ResultRow label="Transactions" value={r.activity?.tx_count?.toLocaleString()} />
-          <ResultRow label="Last active" value={r.activity?.last_seen ? `${String(r.activity.last_seen).slice(0, 10)} (${r.activity.dormant_days}d ago)` : null} />
+          <ResultRow label="现货价格" value={r.balance?.price_usd != null ? `$${fmt(r.balance.price_usd, 2)}` : null} />
+          <ResultRow label="交易数" value={r.activity?.tx_count?.toLocaleString()} />
+          <ResultRow label="最后活跃" value={r.activity?.last_seen ? `${String(r.activity.last_seen).slice(0, 10)} (${r.activity.dormant_days}d ago)` : null} />
           {/* age_days is withheld by the API whenever the sample cannot prove it. */}
           <ResultRow
-            label="Age"
+            label="年龄"
             value={r.activity?.age_days != null ? `${r.activity.age_days} days` : 'unknown — history exceeds sample'}
             color={r.activity?.age_days != null ? undefined : 'var(--text-muted)'}
           />
           {r.ambiguous_chain && (
-            <ResultRow label="Note" value="Address format is valid on both Bitcoin and Solana; assumed Bitcoin." color="#FFD700" />
+            <ResultRow label="备注" value="Address format is valid on both Bitcoin and Solana; assumed Bitcoin." color="#FFD700" />
           )}
 
           {r.labels?.length > 0 && (
@@ -858,16 +858,16 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
           {r.flow && (
             <>
-              <SectionHeader title="FLOW" icon={Layers} color={ACCENT} />
-              <ResultRow label="Total in" value={`${fmt(r.flow.total_in)} ${r.symbol}`} color="#00E676" />
-              <ResultRow label="Total out" value={`${fmt(r.flow.total_out)} ${r.symbol}`} color="#FF9500" />
-              <ResultRow label="Net" value={`${fmt(r.flow.net)} ${r.symbol}`} />
+              <SectionHeader title="资金流" icon={Layers} color={ACCENT} />
+              <ResultRow label="总收入" value={`${fmt(r.flow.total_in)} ${r.symbol}`} color="#00E676" />
+              <ResultRow label="总支出" value={`${fmt(r.flow.total_out)} ${r.symbol}`} color="#FF9500" />
+              <ResultRow label="净值" value={`${fmt(r.flow.net)} ${r.symbol}`} />
             </>
           )}
 
           {r.risk?.factors?.length > 0 && (
             <>
-              <SectionHeader title="RISK FACTORS" icon={AlertTriangle} color={riskColor} />
+              <SectionHeader title="风险因素" icon={AlertTriangle} color={riskColor} />
               {r.risk.factors.map((f: any, i: number) => (
                 <div key={i} className="py-1.5 border-b border-[var(--border-secondary)]/20 last:border-0">
                   <div className="flex items-center gap-2">
@@ -886,7 +886,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
           {r.counterparties?.length > 0 && (
             <>
-              <SectionHeader title={`TOP COUNTERPARTIES (${r.counterparties.length})`} icon={Network} color={ACCENT} />
+              <SectionHeader title={`主要交易对手 (${r.counterparties.length})`} icon={Network} color={ACCENT} />
               {r.counterparties.slice(0, 10).map((c: any, i: number) => (
                 <div key={i} className="flex items-center gap-2 py-1 text-[10px] font-mono">
                   <span className={`w-[34px] flex-shrink-0 font-bold ${c.direction === 'out' ? 'text-[#FF9500]' : c.direction === 'in' ? 'text-[#00E676]' : 'text-[var(--text-muted)]'}`}>
@@ -900,11 +900,11 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
             </>
           )}
 
-          {r.tokens?.length > 0 && (
+          {r.代币?.length > 0 && (
             <>
-              <SectionHeader title={`TOKENS (${r.tokens.length})`} icon={Layers} color={ACCENT} />
+              <SectionHeader title={`代币 (${r.代币.length})`} icon={Layers} color={ACCENT} />
               <div className="flex flex-wrap gap-1">
-                {r.tokens.slice(0, 20).map((t: any, i: number) => (
+                {r.代币.slice(0, 20).map((t: any, i: number) => (
                   <span key={i} className="px-1.5 py-0.5 rounded text-[10px] font-mono border border-white/15 bg-white/5 text-[var(--text-secondary)]">
                     {t.symbol}{t.amount != null ? ` ${fmt(t.amount, 2)}` : ''}
                   </span>
@@ -915,7 +915,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
           {r.transactions?.length > 0 && (
             <>
-              <SectionHeader title={`RECENT TRANSACTIONS (${r.transactions.length})`} icon={Clock} color={ACCENT} />
+              <SectionHeader title={`最近交易 (${r.transactions.length})`} icon={Clock} color={ACCENT} />
               {r.transactions.slice(0, 12).map((t: any, i: number) => (
                 <div key={i} className="flex items-center gap-2 py-1 text-[10px] font-mono">
                   <span className={`w-[34px] flex-shrink-0 font-bold ${t.direction === 'out' ? 'text-[#FF9500]' : t.direction === 'in' ? 'text-[#00E676]' : 'text-[var(--text-muted)]'}`}>
@@ -952,9 +952,9 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'leaks') {
       return (
         <div>
-          <SectionHeader title="DATA LEAK SWEEP" icon={ShieldAlert} color="#E040FB" />
-          <ResultRow label="Email Target" value={r.email} color="#E040FB" />
-          <ResultRow label="Status" value={r.breached ? 'COMPROMISED' : 'SECURE'} color={r.breached ? '#FF1744' : '#00E676'} />
+          <SectionHeader title="数据泄露扫描" icon={ShieldAlert} color="#E040FB" />
+          <ResultRow label="邮箱目标" value={r.email} color="#E040FB" />
+          <ResultRow label="状态" value={r.breached ? 'COMPROMISED' : 'SECURE'} color={r.breached ? '#FF1744' : '#00E676'} />
           
           {r.breached && r.data_exposed?.length > 0 && (
             <div className="mt-2 p-2 border border-[#E040FB]/30 bg-[#E040FB]/10 rounded">
@@ -1004,9 +1004,9 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
         return (
           <div>
-            <SectionHeader title="INFOSTEALER EXPOSURE" icon={Skull} color={accent} />
-            <ResultRow label="Domain" value={r.query} color={accent} />
-            <ResultRow label="Status" value={hit ? 'COMPROMISED MACHINES FOUND' : 'NO RECORDS'} color={accent} />
+            <SectionHeader title="恶意信息窃取暴露" icon={Skull} color={accent} />
+            <ResultRow label="域名" value={r.query} color={accent} />
+            <ResultRow label="状态" value={hit ? 'COMPROMISED MACHINES FOUND' : 'NO RECORDS'} color={accent} />
             {hit && (
               <>
                 <div className="grid grid-cols-2 gap-1.5 mt-2">
@@ -1080,9 +1080,9 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
       const stealers: any[] = Array.isArray(r.stealers) ? r.stealers : [];
       return (
         <div>
-          <SectionHeader title="INFOSTEALER EXPOSURE" icon={Skull} color={accent} />
+          <SectionHeader title="恶意信息窃取暴露" icon={Skull} color={accent} />
           <ResultRow label={TYPE_LABEL[r.type] || 'TARGET'} value={r.query} color={accent} />
-          <ResultRow label="Status" value={hit ? 'COMPROMISED' : 'NOT FOUND IN CORPUS'} color={accent} />
+          <ResultRow label="状态" value={hit ? 'COMPROMISED' : 'NOT FOUND IN CORPUS'} color={accent} />
           {hit && (
             <>
               <ResultRow label="Machines" value={stealers.length} color="#FF1744" />
@@ -1141,8 +1141,8 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
       const certs = r.certificates || r.certs || (Array.isArray(r) ? r : []);
       return (
         <div>
-          <SectionHeader title="CERTIFICATE TRANSPARENCY" icon={Lock} color="#E040FB" />
-          <ResultRow label="Domain" value={query} color="#E040FB" />
+          <SectionHeader title="证书透明日志" icon={Lock} color="#E040FB" />
+          <ResultRow label="域名" value={query} color="#E040FB" />
           <ResultRow label="Certificates" value={Array.isArray(certs) ? certs.length : 0} />
           {Array.isArray(certs) && certs.slice(0, 15).map((c: any, i: number) => (
             <div key={i} className="mt-1.5 p-2 rounded border border-[var(--border-secondary)]/30 bg-[var(--bg-tertiary)]/30">
@@ -1161,8 +1161,8 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'threats') {
       return (
         <div>
-          <SectionHeader title="THREAT INTELLIGENCE" icon={AlertTriangle} color="#FF9500" />
-          <ResultRow label="Query" value={query} color="#FF9500" />
+          <SectionHeader title="威胁情报" icon={AlertTriangle} color="#FF9500" />
+          <ResultRow label="查询" value={query} color="#FF9500" />
           <ResultRow label="Risk Score" value={r.risk_score || r.score} color={
             (r.risk_score || r.score || 0) > 70 ? '#FF3D3D' : (r.risk_score || r.score || 0) > 40 ? '#FF9500' : '#00E676'
           } />
@@ -1170,7 +1170,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
           <ResultRow label="Category" value={r.category || r.type} />
           <ResultRow label="Reports" value={r.total_reports || r.reports} />
           <ResultRow label="Last Seen" value={r.last_seen || r.last_analysis} />
-          {r.tags && <ResultRow label="Tags" value={Array.isArray(r.tags) ? r.tags.join(', ') : r.tags} />}
+          {r.tags && <ResultRow label="标签" value={Array.isArray(r.tags) ? r.tags.join(', ') : r.tags} />}
           {renderFallbackExcluding(['risk_score','score','malicious','category','type','total_reports','reports','last_seen','last_analysis','tags','timestamp','cached','query'])}
         </div>
       );
@@ -1180,14 +1180,14 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
     if (activeTab === 'ssl') {
       return (
         <div>
-          <SectionHeader title="SSL/TLS ANALYSIS" icon={Shield} color="#76FF03" />
-          <ResultRow label="Target" value={query} color="#76FF03" />
+          <SectionHeader title="SSL/TLS 分析" icon={Shield} color="#76FF03" />
+          <ResultRow label="目标" value={query} color="#76FF03" />
           <ResultRow label="Protocol" value={r.protocol || r.tls_version} />
           <ResultRow label="Cipher" value={r.cipher || r.cipher_suite} />
-          <ResultRow label="Valid" value={r.valid !== undefined ? (r.valid ? 'YES' : 'NO') : undefined} color={r.valid ? '#00E676' : '#FF3D3D'} />
+          <ResultRow label="有效" value={r.valid !== undefined ? (r.valid ? 'YES' : 'NO') : undefined} color={r.valid ? '#00E676' : '#FF3D3D'} />
           <ResultRow label="Issuer" value={r.issuer} />
           <ResultRow label="Subject" value={r.subject} />
-          <ResultRow label="Expires" value={r.expires || r.not_after} />
+          <ResultRow label="到期时间" value={r.expires || r.not_after} />
           <ResultRow label="SANs" value={Array.isArray(r.sans) ? r.sans.join(', ') : r.sans} />
           {renderFallback()}
         </div>
@@ -1304,7 +1304,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
         >
           <LocateFixed className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} style={{ color: '#00E676' }} />
           <span className="font-mono font-bold tracking-[0.1em] text-[11px]" style={{ color: '#00E676' }}>
-            {loading ? 'TRACKING…' : 'SELF TRACK'}
+            {loading ? '跟踪中…' : '自我定位'}
           </span>
         </button>
       </div>
@@ -1342,7 +1342,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
           >
             <div className="flex items-center gap-3">
               <LocateFixed className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} style={{ color: '#00E676' }} />
-              <span className="font-mono font-bold tracking-[0.1em] text-[10px]" style={{ color: '#00E676' }}>{loading ? 'TRACKING...' : 'SELF TRACK'}</span>
+              <span className="font-mono font-bold tracking-[0.1em] text-[10px]" style={{ color: '#00E676' }}>{loading ? '跟踪中...' : '自我定位'}</span>
             </div>
           </button>
         </div>
@@ -1396,10 +1396,10 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
 
       {/* Input Area */}
       <div className="flex flex-col gap-1.5">
-        {/* CHAIN INTEL view switch — the brief takes no target. */}
+        {/* 链上情报 view switch — the brief takes no target. */}
         {activeTab === 'crypto' && (
           <div className="flex gap-1">
-            {([['brief', 'DAILY BRIEF'], ['wallet', 'WALLET FORENSICS']] as const).map(([id, label]) => (
+            {([['brief', '每日简报'], ['wallet', '钱包取证']] as const).map(([id, label]) => (
               <button
                 key={id}
                 onClick={() => setChainView(id)}
@@ -1428,7 +1428,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
           <button onClick={runLookup} disabled={loading || !query.trim()}
             className="px-4 py-2 rounded-lg text-[11px] font-mono font-bold tracking-wider disabled:opacity-30 transition-all flex items-center justify-center min-w-[70px]"
             style={{ backgroundColor: `${currentTab?.color}20`, border: `1px solid ${currentTab?.color}40`, color: currentTab?.color }}>
-            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'SCAN'}
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : '扫描'}
           </button>
         </div>
         )}
@@ -1594,7 +1594,7 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
                     {/* Ports + Hostnames Row */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#2A2A28]">
                       <div className="bg-[#0D0D0C] p-4">
-                        <div className="text-[11px] font-mono text-[#5C5A54] tracking-widest uppercase mb-2">Open Ports</div>
+                        <div className="text-[11px] font-mono text-[#5C5A54] tracking-widest uppercase mb-2">开放端口</div>
                         <div className="flex flex-wrap gap-1.5">
                           {device.ports.map((port: number) => (
                             <span key={port} className="px-2 py-1 bg-[#1A1A18] border border-[#2A2A28] rounded text-[10px] font-mono text-[var(--cyan-primary)]">{port}</span>
@@ -1776,11 +1776,11 @@ function OsintPanelInner({ isMobile, onSweepVisualize, onScanGeolocate }: OsintP
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-[rgba(255,255,255,0.05)] bg-[rgba(0,0,0,0.3)] hover:bg-[var(--hover-accent)] transition-colors">
         <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-2 flex-1">
           <Radar className="w-3.5 h-3.5 text-[var(--cyan-primary)]" />
-          <span className="hud-text text-[11px] text-[var(--text-primary)]">RECON TOOLKIT</span>
-          <span className="gotham-tag gotham-tag--info" style={{ fontSize: '9px', padding: '1px 5px' }}>{TABS.length} TOOLS</span>
+          <span className="hud-text text-[11px] text-[var(--text-primary)]">侦察工具集</span>
+          <span className="gotham-tag gotham-tag--info" style={{ fontSize: '9px', padding: '1px 5px' }}>{TABS.length} 个工具</span>
         </button>
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsFullScreen(true)} className="p-1.5 -m-0.5 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/10 transition-colors" title="Full Screen">
+          <button onClick={() => setIsFullScreen(true)} className="p-1.5 -m-0.5 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-white/10 transition-colors" title="全屏">
              <Maximize2 className="w-3.5 h-3.5" />
           </button>
           <div className="w-1.5 h-1.5 rounded-full bg-[var(--cyan-primary)] animate-osiris-pulse" />

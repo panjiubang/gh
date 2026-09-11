@@ -181,7 +181,7 @@ function Tile({ feed, onOpen, onFail }: {
           className="absolute right-1 top-1 z-10 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.12em]"
           style={{ background: 'rgba(0,0,0,0.75)', border: `1px solid ${news(50)}`, color: NEWS }}
         >
-          Open
+          打开
         </button>
       </div>
 

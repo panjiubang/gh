@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback, useEffect, useRef, memo } from 'react';
 import { Loader2, Sparkles, Bug, Flame, ShieldAlert, ExternalLink } from 'lucide-react';
@@ -7,7 +7,7 @@ import { Loader2, Sparkles, Bug, Flame, ShieldAlert, ExternalLink } from 'lucide
  * OSIRIS — Daily chain-threat brief.
  *
  * Rendered inside the RECON toolkit's CHAIN INTEL tab. Self-contained: owns
- * its own fetch, window selector, unattended refresh and AI overview, so the
+ * its own fetch, window selector, unattended refresh and AI 概览, so the
  * host panel only has to drop it in.
  */
 
@@ -90,7 +90,7 @@ function ChainBriefInner() {
       const d = await res.json();
       setAi(d.overview || d.error || 'No overview returned.');
     } catch {
-      setAi('AI overview unavailable.');
+      setAi('AI 概览 unavailable.');
     } finally {
       setAiLoading(false);
     }
@@ -129,7 +129,7 @@ function ChainBriefInner() {
       {loading && !brief && (
         <div className="flex items-center gap-2 py-6 justify-center">
           <Loader2 className="w-4 h-4 animate-spin" style={{ color: ACCENT }} />
-          <span className="text-[11px] font-mono text-[var(--text-muted)]">Building brief…</span>
+          <span className="text-[11px] font-mono text-[var(--text-muted)]">生成简报中…</span>
         </div>
       )}
       {error && <div className="text-[11px] font-mono text-red-400 py-2">{error}</div>}
@@ -138,9 +138,9 @@ function ChainBriefInner() {
         <>
           <div className="grid grid-cols-3 gap-1.5 mb-2">
             {[
-              { label: 'LOSSES', value: usd(t?.exploit_losses_usd), color: '#FF3D3D' },
-              { label: 'EXPLOITS', value: t?.exploit_count ?? 0, color: '#FF9500' },
-              { label: 'CVES', value: t?.cve_count ?? 0, color: '#E040FB' },
+              { label: '损失', value: usd(t?.exploit_losses_usd), color: '#FF3D3D' },
+              { label: '利用', value: t?.exploit_count ?? 0, color: '#FF9500' },
+              { label: 'CVE', value: t?.cve_count ?? 0, color: '#E040FB' },
             ].map(c => (
               <div key={c.label} className="rounded border px-2 py-1.5" style={{ borderColor: `${c.color}33`, background: `${c.color}0d` }}>
                 <div className="text-[9px] font-mono text-[var(--text-muted)]">{c.label}</div>
@@ -156,7 +156,7 @@ function ChainBriefInner() {
             style={{ color: ACCENT, background: `${ACCENT}14`, border: `1px solid ${ACCENT}44` }}
           >
             {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-            AI OVERVIEW
+            AI 概览
           </button>
           {ai && (
             <div className="mt-1.5 px-2 py-1.5 rounded border text-[11px] font-mono leading-relaxed whitespace-pre-wrap"
@@ -165,7 +165,7 @@ function ChainBriefInner() {
             </div>
           )}
 
-          <Head title="ON-CHAIN EXPLOITS" icon={Flame} color="#FF3D3D" right={`${brief.exploits.length} shown`} />
+          <Head title="链上漏洞利用" icon={Flame} color="#FF3D3D" right={`${brief.exploits.length} shown`} />
           {brief.exploits.length === 0 && (
             <div className="text-[10px] font-mono text-[var(--text-muted)] py-1">None in window.</div>
           )}

@@ -877,24 +877,24 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
             <span style="color:#5C5A54;font-size:10px;">${htmlEsc(p.icao24||'')}</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px;">
-            <div><span style="color:#5C5A54;font-size:9px;">MODEL</span><br/><span style="color:#B0BEC5;">${htmlEsc(p.model||'—')}</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">ALT</span><br/><span style="color:#B0BEC5;">${p.alt?Math.round(p.alt)+'m':'—'}</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">SPEED</span><br/><span style="color:#B0BEC5;">${p.speed_knots||'—'}kt</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">HDG</span><br/><span style="color:#B0BEC5;">${Math.round(p.heading||0)}°</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">REG</span><br/><span style="color:#B0BEC5;">${htmlEsc(p.registration||'—')}</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">POS</span><br/><span style="color:#B0BEC5;">${coords[1].toFixed(2)},${coords[0].toFixed(2)}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">机型</span><br/><span style="color:#B0BEC5;">${htmlEsc(p.model||'—')}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">高度</span><br/><span style="color:#B0BEC5;">${p.alt?Math.round(p.alt)+'m':'—'}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">速度</span><br/><span style="color:#B0BEC5;">${p.speed_knots||'—'}kt</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">航向</span><br/><span style="color:#B0BEC5;">${Math.round(p.heading||0)}°</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">注册号</span><br/><span style="color:#B0BEC5;">${htmlEsc(p.registration||'—')}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">位置</span><br/><span style="color:#B0BEC5;">${coords[1].toFixed(2)},${coords[0].toFixed(2)}</span></div>
           </div>
           <div id="ac-${idSafe(p.icao24||'')}" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">
-            <span style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;">IDENTIFYING AIRFRAME…</span>
+            <span style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;">正在识别机架信息…</span>
           </div>
-          <button onclick="window.osirisWatchFlight && window.osirisWatchFlight({ icao24: '${idSafe(p.icao24||'')}', callsign: '${idSafe(cs)}' })" style="width:100%;margin-top:8px;padding:6px 12px;background:rgba(0,229,255,0.10);border:1px solid rgba(0,229,255,0.35);color:#7FE9FF;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:bold;letter-spacing:0.1em;border-radius:4px;cursor:pointer;">+ WATCH THIS AIRCRAFT</button>
+          <button onclick="window.osirisWatchFlight && window.osirisWatchFlight({ icao24: '${idSafe(p.icao24||'')}', callsign: '${idSafe(cs)}' })" style="width:100%;margin-top:8px;padding:6px 12px;background:rgba(0,229,255,0.10);border:1px solid rgba(0,229,255,0.35);color:#7FE9FF;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:bold;letter-spacing:0.1em;border-radius:4px;cursor:pointer;">+ 关注此航班</button>
           <div id="${routeLoadingId}" style="margin-top:8px;padding:6px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
-            <span style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;">RESOLVING ROUTE…</span>
+            <span style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;">正在解析航线…</span>
           </div>
           <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
-            <a href="https://www.flightaware.com/live/flight/${encodeURIComponent(cs)}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">FLIGHTAWARE</a>
+            <a href="https://www.flightaware.com/live/flight/${encodeURIComponent(cs)}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">FlightAware</a>
             <a href="https://globe.adsbexchange.com/?icao=${encodeURIComponent(p.icao24||'')}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">ADS-B</a>
-            <a href="https://www.radarbox.com/data/flights/${encodeURIComponent(cs)}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">RADARBOX</a>
+            <a href="https://www.radarbox.com/data/flights/${encodeURIComponent(cs)}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">RadarBox</a>
           </div>
         </div>`);
 
@@ -906,7 +906,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
             .then((d) => {
               const el = document.getElementById(`ac-${p.icao24}`);
               if (!el || !d || d.error) {
-                if (el) el.innerHTML = '<span style="color:#5C5A54;font-size:9px;">AIRFRAME NOT IN REGISTRY</span>';
+                if (el) el.innerHTML = '<span style="color:#5C5A54;font-size:9px;">机架未在注册库中</span>';
                 return;
               }
               const bits = [d.registration, d.typeCode, d.operator].filter(Boolean)
@@ -941,24 +941,24 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
               const distKm = routeData.totalDistanceKm || 0;
               el.innerHTML = `
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                  <div><span style="color:#5C5A54;font-size:8px;">FROM</span><br/><span style="color:#E8E6E0;font-size:13px;font-weight:700;">${htmlEsc(routeData.origin.iata || routeData.origin.icao)}</span> <span style="color:#5C5A54;font-size:9px;">${htmlEsc(routeData.origin.city)}</span></div>
+                  <div><span style="color:#5C5A54;font-size:8px;">出发</span><br/><span style="color:#E8E6E0;font-size:13px;font-weight:700;">${htmlEsc(routeData.origin.iata || routeData.origin.icao)}</span> <span style="color:#5C5A54;font-size:9px;">${htmlEsc(routeData.origin.city)}</span></div>
                   <span style="color:#5C5A54;font-size:11px;">&rarr;</span>
-                  <div style="text-align:right;"><span style="color:#5C5A54;font-size:8px;">TO</span><br/><span style="color:#E8E6E0;font-size:13px;font-weight:700;">${htmlEsc(routeData.destination.iata || routeData.destination.icao)}</span> <span style="color:#5C5A54;font-size:9px;">${htmlEsc(routeData.destination.city)}</span></div>
+                  <div style="text-align:right;"><span style="color:#5C5A54;font-size:8px;">到达</span><br/><span style="color:#E8E6E0;font-size:13px;font-weight:700;">${htmlEsc(routeData.destination.iata || routeData.destination.icao)}</span> <span style="color:#5C5A54;font-size:9px;">${htmlEsc(routeData.destination.city)}</span></div>
                 </div>
                 <div style="height:2px;background:rgba(255,255,255,0.06);border-radius:1px;margin:6px 0;"><div style="width:${pct}%;height:100%;background:rgba(255,255,255,0.35);border-radius:1px;"></div></div>
                 <div style="display:flex;justify-content:space-between;font-size:10px;color:#78909C;">
-                  <span>DEP ${depTime}</span>
+                  <span>出发 ${depTime}</span>
                   <span>${pct}% &middot; ${distKm.toLocaleString()}km</span>
-                  <span>ARR ${arrTime}</span>
+                  <span>到达 ${arrTime}</span>
                 </div>
               `;
             } else {
-              el.innerHTML = `<span style="color:#5C5A54;font-size:9px;">NO SCHEDULED ROUTE</span>`;
+              el.innerHTML = `<span style="color:#5C5A54;font-size:9px;">无计划航线</span>`;
             }
           })
           .catch(() => {
             const el = document.getElementById(routeLoadingId);
-            if (el) el.innerHTML = `<span style="color:#5C5A54;font-size:9px;">ROUTE UNAVAILABLE</span>`;
+            if (el) el.innerHTML = `<span style="color:#5C5A54;font-size:9px;">航线不可用</span>`;
           });
       });
       map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
@@ -998,10 +998,10 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         <div style="color:#FF9500;font-size:14px;font-weight:700;margin-bottom:4px;">M${p.magnitude} EARTHQUAKE</div>
         <div style="font-size:9px;color:#E8E6E0;margin-bottom:8px;">${htmlEsc(p.place||'Unknown location')}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:9px;">
-          <div><span style="color:#5C5A54;">DEPTH</span><br/><span style="color:#E8E6E0;">${p.depth||'—'}km</span></div>
+          <div><span style="color:#5C5A54;">震源深度</span><br/><span style="color:#E8E6E0;">${p.depth||'—'}km</span></div>
           <div><span style="color:#5C5A54;">COORDS</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}, ${coords[0].toFixed(3)}</span></div>
         </div>
-        <a href="${p.source === 'NIGGG-BAS' ? 'https://ndc.niggg.bas.bg/' : `https://earthquake.usgs.gov/earthquakes/eventpage/${encodeURIComponent(p.id||'')}`}" target="_blank" style="${linkStyle}color:#FF9500;border:1px solid rgba(255,149,0,0.4);background:rgba(255,149,0,0.1);">📊 ${p.source === 'NIGGG-BAS' ? 'NIGGG-BAS' : 'USGS DETAILS'}</a>
+        <a href="${p.source === 'NIGGG-BAS' ? 'https://ndc.niggg.bas.bg/' : `https://earthquake.usgs.gov/earthquakes/eventpage/${encodeURIComponent(p.id||'')}`}" target="_blank" style="${linkStyle}color:#FF9500;border:1px solid rgba(255,149,0,0.4);background:rgba(255,149,0,0.1);">📊 ${p.source === 'NIGGG-BAS' ? 'NIGGG-BAS' : 'USGS 详情'}</a>
       </div>`);
     });
 
@@ -1102,12 +1102,12 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       const p = e.features[0].properties as any;
       const coords = (e.features[0].geometry as any).coordinates;
       popup(coords, `<div style="${pStyle}border:1px solid rgba(255,107,0,0.3);">
-        <div style="color:#FF6B00;font-size:12px;font-weight:700;margin-bottom:6px;">🔥 ACTIVE FIRE DETECTED</div>
+        <div style="color:#FF6B00;font-size:12px;font-weight:700;margin-bottom:6px;">🔥 检测到活跃火灾</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:9px;margin-bottom:8px;">
-          <div><span style="color:#5C5A54;">BRIGHTNESS</span><br/><span style="color:#FF6B00;">${p.brightness||'—'}K</span></div>
-          <div><span style="color:#5C5A54;">COORDS</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°</span></div>
+          <div><span style="color:#5C5A54;">亮度</span><br/><span style="color:#FF6B00;">${p.brightness||'—'}K</span></div>
+          <div><span style="color:#5C5A54;">坐标</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°</span></div>
         </div>
-        <a href="https://firms.modaps.eosdis.nasa.gov/map/#d:24hrs;l:noaa20-viirs,viirs,modis_a,modis_t;@${coords[0]},${coords[1]},10z" target="_blank" style="${linkStyle}color:#FF6B00;border:1px solid rgba(255,107,0,0.4);background:rgba(255,107,0,0.1);">🛰️ NASA FIRMS MAP</a>
+        <a href="https://firms.modaps.eosdis.nasa.gov/map/#d:24hrs;l:noaa20-viirs,viirs,modis_a,modis_t;@${coords[0]},${coords[1]},10z" target="_blank" style="${linkStyle}color:#FF6B00;border:1px solid rgba(255,107,0,0.4);background:rgba(255,107,0,0.1);">🛰️ NASA FIRMS 地图</a>
       </div>`);
     });
 
@@ -1130,17 +1130,17 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
           <div style="color:#FF1744;font-size:12px;font-weight:700;letter-spacing:0.1em;text-shadow:0 0 4px rgba(255,23,68,0.5);">[ ${htmlEsc(tType)} ]</div>
           <div style="color:#5C5A54;font-size:9px;">${htmlEsc(place)}</div>
         </div>
-        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:2px;">${htmlEsc(p.malware || 'Unclassified payload')}</div>
+        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:2px;">${htmlEsc(p.malware || '未分类载荷')}</div>
         ${host ? `<div style="color:#5C5A54;font-size:9px;margin-bottom:10px;">${htmlEsc(host)}</div>` : '<div style="margin-bottom:10px;"></div>'}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;margin-bottom:8px;background:rgba(0,0,0,0.3);padding:6px;border-radius:4px;">
-          <div><span style="color:#5C5A54;">HOST</span><br/><span style="color:#00E5FF;font-family:monospace;">${htmlEsc(p.ip)}:${htmlEsc(String(p.port ?? 0))}</span></div>
-          <div><span style="color:#5C5A54;">STATUS</span><br/><span style="color:${statusColor};">${htmlEsc((p.status||'unknown').toUpperCase())}</span></div>
-          <div><span style="color:#5C5A54;">LIVE URLS</span><br/><span style="color:#E8E6E0;">${urls}</span></div>
-          <div><span style="color:#5C5A54;">LAST REPORT</span><br/><span style="color:#E8E6E0;">${htmlEsc((p.last_seen || '').split(' ')[0] || '—')}</span></div>
+          <div><span style="color:#5C5A54;">主机</span><br/><span style="color:#00E5FF;font-family:monospace;">${htmlEsc(p.ip)}:${htmlEsc(String(p.port ?? 0))}</span></div>
+          <div><span style="color:#5C5A54;">状态</span><br/><span style="color:${statusColor};">${htmlEsc((p.status||'unknown').toUpperCase())}</span></div>
+          <div><span style="color:#5C5A54;">活跃 URL</span><br/><span style="color:#E8E6E0;">${urls}</span></div>
+          <div><span style="color:#5C5A54;">最近报告</span><br/><span style="color:#E8E6E0;">${htmlEsc((p.last_seen || '').split(' ')[0] || '—')}</span></div>
         </div>
-        <div style="color:#5C5A54;font-size:9px;margin-bottom:10px;">First seen ${htmlEsc((p.first_seen || '').split(' ')[0] || '—')}${p.reporter ? ` · reported by ${htmlEsc(p.reporter)}` : ''}</div>
+        <div style="color:#5C5A54;font-size:9px;margin-bottom:10px;">首次发现 ${htmlEsc((p.first_seen || '').split(' ')[0] || '—')}${p.reporter ? ` · 报告来源 ${htmlEsc(p.reporter)}` : ''}</div>
         <div style="display:flex;gap:6px;">
-          ${ref ? `<a href="${ref}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:#E8E6E0;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);">URLHAUS REPORT ↗</a>` : ''}
+          ${ref ? `<a href="${ref}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:#E8E6E0;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);">URLHAUS 报告 ↗</a>` : ''}
         </div>
       </div>`);
     });
@@ -1169,7 +1169,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
           <span style="opacity:0.6;">Country</span><span style="color:#E8E6E0;">${htmlEsc(p.country || '—')}</span>
         </div>
         <div style="margin-top:8px;font-size:9px;color:#5C5A54;">GDELT 2.0 · ${htmlEsc(String(p.date).slice(0, 16).replace('T', ' '))}Z</div>
-        ${src !== '#' ? `<a href="${src}" target="_blank" rel="noopener noreferrer" style="${linkStyle}color:${accent};border:1px solid ${accent}66;background:${accent}1a;">SOURCE ARTICLE</a>` : ''}
+        ${src !== '#' ? `<a href="${src}" target="_blank" rel="noopener noreferrer" style="${linkStyle}color:${accent};border:1px solid ${accent}66;background:${accent}1a;">来源文章</a>` : ''}
       </div>`);
     });
 
@@ -1252,7 +1252,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       popup(coords, `<div style="${pStyle}border:1px solid ${kindColor}4d;">
         <div style="color:${kindColor};font-size:12px;font-weight:700;margin-bottom:6px;">${kindLabel}</div>
         <div style="font-size:9px;color:#E8E6E0;margin-bottom:8px;line-height:1.4;">${htmlEsc(p.name||'Unclassified incident')}</div>
-        ${src !== '#' ? `<a href="${src}" target="_blank" rel="noopener noreferrer" style="${linkStyle}flex:1;text-align:center;color:${kindColor};border:1px solid ${kindColor}66;background:${kindColor}26;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ OPEN SOURCE ↗ ]</a>` : ''}
+        ${src !== '#' ? `<a href="${src}" target="_blank" rel="noopener noreferrer" style="${linkStyle}flex:1;text-align:center;color:${kindColor};border:1px solid ${kindColor}66;background:${kindColor}26;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ 来源 ↗ ]</a>` : ''}
       </div>`);
     });
 
@@ -1263,13 +1263,13 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       const coords = (e.features[0].geometry as any).coordinates;
       const color = p.severity === 'war' ? '#FF1744' : p.severity === 'high' ? '#FF9500' : '#FFD500';
       popup(coords, `<div style="${pStyle}border:1px solid ${color}40;">
-        <div style="color:${color};font-size:12px;font-weight:700;margin-bottom:6px;">⚠️ ${htmlEsc(p.label || 'WARNING EVENT')}</div>
-        <div style="font-size:10px;color:#E8E6E0;margin-bottom:8px;line-height:1.4;">${htmlEsc(p.description || 'Global event detected at this location.')}</div>
+        <div style="color:${color};font-size:12px;font-weight:700;margin-bottom:6px;">⚠️ ${htmlEsc(p.label || '预警事件')}</div>
+        <div style="font-size:10px;color:#E8E6E0;margin-bottom:8px;line-height:1.4;">${htmlEsc(p.description || '在该位置检测到全球事件。')}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:9px;margin-bottom:8px;">
-          <div><span style="color:#5C5A54;">SEVERITY</span><br/><span style="color:${color};">${(p.severity||'unknown').toUpperCase()}</span></div>
-          <div><span style="color:#5C5A54;">COORDS</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°</span></div>
+          <div><span style="color:#5C5A54;">严重度</span><br/><span style="color:${color};">${(p.severity||'unknown').toUpperCase()}</span></div>
+          <div><span style="color:#5C5A54;">坐标</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°</span></div>
         </div>
-        ${p.sourceUrl ? `<a href="${urlSafe(p.sourceUrl)}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ OPEN SOURCE ↗ ]</a>` : ''}
+        ${p.sourceUrl ? `<a href="${urlSafe(p.sourceUrl)}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ 来源 ↗ ]</a>` : ''}
       </div>`);
     });
 
@@ -1298,12 +1298,12 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
             <span style="color:${domainColor};font-size:11px;font-weight:700;letter-spacing:0.1em;">${domainLabel}</span>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;margin-bottom:8px;">
-            <div><span style="color:#5C5A54;">FROM</span><br/><span style="color:#E8E6E0;">${htmlEsc(p.fromName || 'Origin')}</span></div>
-            <div><span style="color:#5C5A54;">TO</span><br/><span style="color:#E8E6E0;">${htmlEsc(p.toName || 'Destination')}</span></div>
-            <div><span style="color:#5C5A54;">DOMAIN</span><br/><span style="color:${domainColor};">${p.domain}</span></div>
-            <div><span style="color:#5C5A54;">SOURCE</span><br/><a href="${urlSafe(srcUrl)}" target="_blank" style="color:${domainColor};text-decoration:underline;cursor:pointer;">${htmlEsc(p.source || 'OSIRIS')}</a></div>
+            <div><span style="color:#5C5A54;">出发地</span><br/><span style="color:#E8E6E0;">${htmlEsc(p.fromName || '起点')}</span></div>
+            <div><span style="color:#5C5A54;">目的地</span><br/><span style="color:#E8E6E0;">${htmlEsc(p.toName || '终点')}</span></div>
+            <div><span style="color:#5C5A54;">领域</span><br/><span style="color:${domainColor};">${p.domain}</span></div>
+            <div><span style="color:#5C5A54;">来源</span><br/><a href="${urlSafe(srcUrl)}" target="_blank" style="color:${domainColor};text-decoration:underline;cursor:pointer;">${htmlEsc(p.source || '观寰')}</a></div>
           </div>
-          <a href="${urlSafe(srcUrl)}" target="_blank" style="${linkStyle}color:${domainColor};border:1px solid ${domainColor}40;background:${domainColor}18;display:inline-block;margin-top:4px;">OPEN SOURCE ↗</a>
+          <a href="${urlSafe(srcUrl)}" target="_blank" style="${linkStyle}color:${domainColor};border:1px solid ${domainColor}40;background:${domainColor}18;display:inline-block;margin-top:4px;">开源来源 ↗</a>
         </div>`);
       });
     });
@@ -1320,19 +1320,19 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
           <div style="color:${sevColor};font-size:12px;font-weight:700;letter-spacing:0.12em;text-shadow:0 0 6px ${sevColor}60;">⚡ ${htmlEsc((p.action || 'ATTACK').toUpperCase())}</div>
           <div style="font-size:8px;padding:2px 6px;border-radius:3px;font-weight:700;letter-spacing:0.1em;background:${sevColor}20;color:${sevColor};border:1px solid ${sevColor}50;">${sevLabel}</div>
         </div>
-        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${htmlEsc(p.malware || 'Unknown Payload')}</div>
+        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${htmlEsc(p.malware || '未知载荷')}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;margin-bottom:8px;background:rgba(0,0,0,0.35);padding:8px;border-radius:4px;border:1px solid rgba(255,255,255,0.04);">
-          <div><span style="color:#5C5A54;font-size:7px;letter-spacing:0.1em;">SOURCE ORIGIN</span><br/><span style="color:#FF5252;font-family:monospace;">${p.src_lat || '?'}°, ${p.src_lng || '?'}°</span></div>
-          <div><span style="color:#5C5A54;font-size:7px;letter-spacing:0.1em;">TARGET</span><br/><span style="color:#00E5FF;font-family:monospace;">${htmlEsc(p.target_ip || '—')}</span></div>
-          <div><span style="color:#5C5A54;font-size:7px;letter-spacing:0.1em;">TARGET COUNTRY</span><br/><span style="color:#E8E6E0;">${htmlEsc(p.target_country || '—')}</span></div>
-          <div><span style="color:#5C5A54;font-size:7px;letter-spacing:0.1em;">PORT</span><br/><span style="color:#FFD600;font-family:monospace;">${p.port || '—'}</span></div>
+          <div><span style="color:#5C5A54;font-size:7px;letter-spacing:0.1em;">攻击来源</span><br/><span style="color:#FF5252;font-family:monospace;">${p.src_lat || '?'}°, ${p.src_lng || '?'}°</span></div>
+          <div><span style="color:#5C5A54;font-size:7px;letter-spacing:0.1em;">目标</span><br/><span style="color:#00E5FF;font-family:monospace;">${htmlEsc(p.target_ip || '—')}</span></div>
+          <div><span style="color:#5C5A54;font-size:7px;letter-spacing:0.1em;">目标国家</span><br/><span style="color:#E8E6E0;">${htmlEsc(p.target_country || '—')}</span></div>
+          <div><span style="color:#5C5A54;font-size:7px;letter-spacing:0.1em;">端口</span><br/><span style="color:#FFD600;font-family:monospace;">${p.port || '—'}</span></div>
         </div>
         <div style="display:flex;gap:6px;align-items:center;">
           <div style="flex:1;height:3px;border-radius:2px;background:linear-gradient(90deg, ${sevColor}00, ${sevColor});opacity:0.5;"></div>
-          <span style="font-size:7px;color:#5C5A54;letter-spacing:0.15em;">SEVERITY ${p.severity || '?'}/10</span>
+          <span style="font-size:7px;color:#5C5A54;letter-spacing:0.15em;">严重程度 ${p.severity || '?'}/10</span>
           <div style="flex:1;height:3px;border-radius:2px;background:linear-gradient(90deg, ${sevColor}, ${sevColor}00);opacity:0.5;"></div>
         </div>
-        <div style="margin-top:8px;font-size:7px;color:#5C5A54;text-align:center;letter-spacing:0.1em;">SOURCE: ABUSE.CH FEODO TRACKER</div>
+        <div style="margin-top:8px;font-size:7px;color:#5C5A54;text-align:center;letter-spacing:0.1em;">数据来源: ABUSE.CH FEODO TRACKER</div>
       </div>`);
     });
 
@@ -1348,11 +1348,11 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       if (!p) return;
       const coords = e.features[0].geometry.coordinates.slice();
       popup(coords, `<div style="${pStyle}border:1px solid rgba(255,61,61,0.5);">
-        <div style="color:#FF3D3D;font-size:12px;font-weight:700;margin-bottom:6px;">🎯 TARGET: ${htmlEsc(p.id)}</div>
-        <div style="font-size:9px;color:#E8E6E0;margin-bottom:8px;">${htmlEsc(p.city || 'Unknown')}, ${htmlEsc(p.country || 'Unknown')} — ${htmlEsc(p.isp || 'Unknown ISP')}</div>
+        <div style="color:#FF3D3D;font-size:12px;font-weight:700;margin-bottom:6px;">🎯 目标: ${htmlEsc(p.id)}</div>
+        <div style="font-size:9px;color:#E8E6E0;margin-bottom:8px;">${htmlEsc(p.city || '未知')}, ${htmlEsc(p.country || '未知')} — ${htmlEsc(p.isp || '未知 ISP')}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:9px;">
-          <div><span style="color:#5C5A54;">TYPE</span><br/><span style="color:#00E5FF;">${(p.type || 'UNKNOWN').toUpperCase()}</span></div>
-          <div><span style="color:#5C5A54;">COORDS</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°</span></div>
+          <div><span style="color:#5C5A54;">类型</span><br/><span style="color:#00E5FF;">${(p.type || '未知').toUpperCase()}</span></div>
+          <div><span style="color:#5C5A54;">坐标</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°</span></div>
         </div>
       </div>`);
     });
@@ -1376,7 +1376,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         <div style="color:${color};font-size:12px;font-weight:700;margin-bottom:4px;">🏢 ${htmlEsc(p.name)}</div>
         <div style="font-size:9px;color:#aaa;margin-bottom:8px;">${htmlEsc(p.category)} | ${htmlEsc(p.city)}, ${htmlEsc(p.country)}</div>
         <div style="display:grid;grid-template-columns:1fr;gap:4px;font-size:11px;">
-          <div><span style="color:#5C5A54;font-size:9px;">SCM RISK LEVEL</span><br/><span style="color:${color};font-weight:bold;">${p.risk_level}</span></div>
+          <div><span style="color:#5C5A54;font-size:9px;">SCM 风险等级</span><br/><span style="color:${color};font-weight:bold;">${p.risk_level}</span></div>
         </div>
         ${threatsHtml}
       </div>`);
@@ -1396,8 +1396,8 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         <div style="font-size:12px;margin-bottom:8px;color:#fff;">${p.ip}</div>
         ${hostnames.length > 0 ? `<div style="font-size:9px;color:#8A8880;margin-bottom:6px;">${hostnames.join(', ')}</div>` : ''}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
-          <div><span style="color:#5C5A54;">PORTS</span><br/><span style="color:#E8E6E0;">${ports.length}</span></div>
-          <div><span style="color:#5C5A54;">RISK</span><br/><span style="color:${riskColors[p.risk_level] || '#666'};">${p.risk_level}</span></div>
+          <div><span style="color:#5C5A54;">港口数</span><br/><span style="color:#E8E6E0;">${ports.length}</span></div>
+          <div><span style="color:#5C5A54;">风险</span><br/><span style="color:${riskColors[p.risk_level] || '#666'};">${p.risk_level}</span></div>
         </div>
         <div style="font-size:9px;color:#8A8880;margin-bottom:6px;">Open: ${ports.slice(0, 12).join(', ')}${ports.length > 12 ? ' ...' : ''}</div>
         ${vulns.length > 0 ? `<div style="font-size:9px;color:#FF3D3D;margin-bottom:6px;">⚠ CVEs: ${vulns.slice(0, 5).join(', ')}${vulns.length > 5 ? ` +${vulns.length - 5} more` : ''}</div>` : ''}
@@ -1411,12 +1411,12 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       const coords = (e.features[0].geometry as any).coordinates;
       popup(coords, `<div style="${pStyle}border:1px solid ${p.color}40;">
         <div style="color:${p.color};font-size:12px;font-weight:700;letter-spacing:0.1em;margin-bottom:4px;">🎈 ${p.callsign}</div>
-        <div style="font-size:9px;color:#aaa;margin-bottom:8px;">${p.type.toUpperCase()} / STATUS: ${p.status.toUpperCase()}</div>
+        <div style="font-size:9px;color:#aaa;margin-bottom:8px;">${p.type.toUpperCase()} / 状态: ${p.status.toUpperCase()}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:9px;">
-          <div><span style="color:#5C5A54;">ALTITUDE</span><br/><span style="color:#E8E6E0;">${p.altitude} m</span></div>
-          <div><span style="color:#5C5A54;">SPEED</span><br/><span style="color:#E8E6E0;">${Math.round(p.speed)} km/h</span></div>
-          <div><span style="color:#5C5A54;">VERT RATE</span><br/><span style="color:${p.verticalRate > 0 ? '#00E676' : '#FF3D3D'};">${p.verticalRate.toFixed(1)} m/s</span></div>
-          <div><span style="color:#5C5A54;">TEMP</span><br/><span style="color:#E8E6E0;">${p.temperature}°C</span></div>
+          <div><span style="color:#5C5A54;">高度</span><br/><span style="color:#E8E6E0;">${p.altitude} m</span></div>
+          <div><span style="color:#5C5A54;">速度</span><br/><span style="color:#E8E6E0;">${Math.round(p.speed)} km/h</span></div>
+          <div><span style="color:#5C5A54;">垂直速率</span><br/><span style="color:${p.verticalRate > 0 ? '#00E676' : '#FF3D3D'};">${p.verticalRate.toFixed(1)} m/s</span></div>
+          <div><span style="color:#5C5A54;">温度</span><br/><span style="color:#E8E6E0;">${p.temperature}°C</span></div>
         </div>
       </div>`);
     });
@@ -1431,9 +1431,9 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         <div style="color:${color};font-size:12px;font-weight:700;margin-bottom:4px;">☢️ ${p.name}</div>
         <div style="font-size:9px;color:#aaa;margin-bottom:8px;">${p.city}, ${p.country}</div>
         <div style="display:grid;grid-template-columns:1fr;gap:4px;font-size:11px;">
-          <div><span style="color:#5C5A54;font-size:9px;">READING</span><br/><span style="color:${color};font-weight:bold;">${p.reading} nSv/h</span></div>
-          <div><span style="color:#5C5A54;font-size:9px;">STATUS</span><br/><span style="color:${color};">${p.status}</span></div>
-          <div><span style="color:#5C5A54;font-size:9px;">NETWORK</span><br/><span style="color:#E8E6E0;">${p.network}</span></div>
+          <div><span style="color:#5C5A54;font-size:9px;">读数</span><br/><span style="color:${color};font-weight:bold;">${p.reading} nSv/h</span></div>
+          <div><span style="color:#5C5A54;font-size:9px;">状态</span><br/><span style="color:${color};">${p.status}</span></div>
+          <div><span style="color:#5C5A54;font-size:9px;">网络</span><br/><span style="color:#E8E6E0;">${p.network}</span></div>
         </div>
       </div>`);
     });
@@ -1449,17 +1449,17 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       popup(coords, `<div style="${pStyle}border:1px solid ${color}60;box-shadow:inset 0 0 12px ${color}15;">
         <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${color}40;padding-bottom:6px;margin-bottom:8px;">
           <div style="color:${color};font-size:12px;font-weight:700;letter-spacing:0.1em;">${icon} [ ${(p.type||'VESSEL').toUpperCase()} ]</div>
-          <div style="color:#5C5A54;font-size:9px;">FLAG: ${p.flag||'UNK'}</div>
+          <div style="color:#5C5A54;font-size:9px;">旗国: ${p.flag||'未标'}</div>
         </div>
-        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${p.name || 'UNIDENTIFIED VESSEL'}</div>
+        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${p.name || '未识别船舶'}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;margin-bottom:8px;background:rgba(0,0,0,0.3);padding:6px;border-radius:4px;">
-          <div><span style="color:#5C5A54;">SPEED</span><br/><span style="color:${color};font-family:monospace;">${Number(p.speed).toFixed(1)} kn</span></div>
-          <div><span style="color:#5C5A54;">HEADING</span><br/><span style="color:${color};font-family:monospace;">${Number(p.heading).toFixed(0)}°</span></div>
-          <div><span style="color:#5C5A54;">LATITUDE</span><br/><span style="color:#E8E6E0;font-family:monospace;">${coords[1].toFixed(4)}°</span></div>
-          <div><span style="color:#5C5A54;">LONGITUDE</span><br/><span style="color:#E8E6E0;font-family:monospace;">${coords[0].toFixed(4)}°</span></div>
+          <div><span style="color:#5C5A54;">速度</span><br/><span style="color:${color};font-family:monospace;">${Number(p.speed).toFixed(1)} kn</span></div>
+          <div><span style="color:#5C5A54;">航向</span><br/><span style="color:${color};font-family:monospace;">${Number(p.heading).toFixed(0)}°</span></div>
+          <div><span style="color:#5C5A54;">纬度</span><br/><span style="color:#E8E6E0;font-family:monospace;">${coords[1].toFixed(4)}°</span></div>
+          <div><span style="color:#5C5A54;">经度</span><br/><span style="color:#E8E6E0;font-family:monospace;">${coords[0].toFixed(4)}°</span></div>
         </div>
-        <div><span style="color:#5C5A54;font-size:9px;">DESTINATION: </span><span style="color:#E8E6E0;font-size:9px;">${p.destination || 'UNKNOWN'}</span></div>
-        <a href="https://www.marinetraffic.com/en/ais/details/ships/mmsi:${p.mmsi}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ OPEN SOURCE ↗ ]</a>
+        <div><span style="color:#5C5A54;font-size:9px;">目的地: </span><span style="color:#E8E6E0;font-size:9px;">${p.destination || '未知'}</span></div>
+        <a href="https://www.marinetraffic.com/en/ais/details/ships/mmsi:${p.mmsi}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ 来源 ↗ ]</a>
       </div>`);
     });
 
@@ -1473,11 +1473,11 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       // Build a full-field table from raw DB row (snake_case keys)
       const raw = p.raw || {};
       const labelMap: Record<string, string> = {
-        id: 'ID', mmsi: 'MMSI', name: 'NAME', callsign: 'CALLSIGN',
-        status: 'STATUS', type: 'TYPE', destination: 'DESTINATION',
-        speed: 'SPEED (kn)', length: 'LENGTH (m)', width: 'WIDTH (m)',
-        draught: 'DRAUGHT (m)', dn: 'DN', updatetimestamp: 'UPDATE TS',
-        updatetime: 'UPDATE TIME', lat: 'LATITUDE', lon: 'LONGITUDE',
+        id: 'ID', mmsi: 'MMSI', name: '名称', callsign: '呼号',
+        status: '状态', type: '类型', destination: '目的地',
+        speed: '速度 (kn)', length: '长度 (m)', width: '宽度 (m)',
+        draught: '吃水 (m)', dn: 'DN', updatetimestamp: '更新时间戳',
+        updatetime: '更新时间', lat: '纬度', lon: '经度',
       };
 
       // Build grid rows for every non-null field in the DB row
@@ -1498,14 +1498,14 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
 
       popup(coords, `<div style="${pStyle}border:1px solid ${color}60;box-shadow:inset 0 0 12px ${color}15;max-width:440px;">
         <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${color}40;padding-bottom:6px;margin-bottom:8px;">
-          <div style="color:${color};font-size:12px;font-weight:700;letter-spacing:0.1em;">🛰️ [ SATELLITE SHIP ]</div>
+          <div style="color:${color};font-size:12px;font-weight:700;letter-spacing:0.1em;">🛰️ [ 卫星船舶 ]</div>
           <div style="color:#5C5A54;font-size:9px;">MMSI: ${htmlEsc(p.mmsi || '—')}</div>
         </div>
-        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${htmlEsc(p.name || 'UNIDENTIFIED VESSEL')}</div>
+        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${htmlEsc(p.name || '未识别船舶')}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;margin-bottom:8px;background:rgba(0,0,0,0.3);padding:6px;border-radius:4px;max-height:300px;overflow-y:auto;">
           ${gridRows.join('')}
         </div>
-        <a href="https://www.marinetraffic.com/en/ais/details/ships/mmsi:${htmlEsc(p.mmsi || '')}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ MARINE TRAFFIC ↗ ]</a>
+        <a href="https://www.marinetraffic.com/en/ais/details/ships/mmsi:${htmlEsc(p.mmsi || '')}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ 船舶交通 ↗ ]</a>
       </div>`);
     });
 
@@ -1516,14 +1516,14 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       const coords = (e.features[0].geometry as any).coordinates;
       const iconEmoji = p.icon === 'cyclone' ? '🌀' : p.icon === 'volcano' ? '🌋' : p.icon === 'flood' ? '🌊' : p.icon === 'drought' ? '🏜️' : p.icon === 'ice' ? '🧊' : p.icon === 'weather' ? '⚠️' : '⚡';
       popup(coords, `<div style="${pStyle}border:1px solid rgba(224,64,251,0.3);">
-        <div style="color:#E040FB;font-size:14px;font-weight:700;margin-bottom:6px;">${iconEmoji} ${p.type || 'Weather Event'}</div>
-        <div style="font-size:10px;color:#E8E6E0;margin-bottom:8px;line-height:1.4;">${p.title || 'Unknown event'}</div>
+        <div style="color:#E040FB;font-size:14px;font-weight:700;margin-bottom:6px;">${iconEmoji} ${p.type || '天气事件'}</div>
+        <div style="font-size:10px;color:#E8E6E0;margin-bottom:8px;line-height:1.4;">${p.title || '未知事件'}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:9px;margin-bottom:8px;">
-          <div><span style="color:#5C5A54;">SEVERITY</span><br/><span style="color:${p.severity === 'high' ? '#FF1744' : '#FFD700'};">${(p.severity||'low').toUpperCase()}</span></div>
-          <div><span style="color:#5C5A54;">COORDS</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°</span></div>
+          <div><span style="color:#5C5A54;">严重度</span><br/><span style="color:${p.severity === 'high' ? '#FF1744' : '#FFD700'};">${(p.severity||'low').toUpperCase()}</span></div>
+          <div><span style="color:#5C5A54;">坐标</span><br/><span style="color:#E8E6E0;">${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°</span></div>
         </div>
         <div style="display:flex;gap:6px;">
-          ${p.source ? `<a href="${p.source}" target="_blank" style="${linkStyle}color:#E040FB;border:1px solid rgba(224,64,251,0.4);background:rgba(224,64,251,0.1);">📡 SOURCE</a>` : ''}
+          ${p.source ? `<a href="${p.source}" target="_blank" style="${linkStyle}color:#E040FB;border:1px solid rgba(224,64,251,0.4);background:rgba(224,64,251,0.1);">📡 来源</a>` : ''}
         </div>
       </div>`);
     });
@@ -1558,10 +1558,10 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         <div style="color:${accent};font-size:14px;font-weight:700;margin-bottom:2px;">☢️ ${htmlEsc(p.name || 'Nuclear Facility')}</div>
         <div style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;margin-bottom:10px;">${htmlEsc([p.city, p.country].filter(Boolean).join(', ')) || '—'}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 6px;font-size:9px;">
-          ${row('STATUS', htmlEsc(status) || '—', accent)}
-          ${row('OWNER', htmlEsc(p.owner) || '—')}
-          ${row('REACTORS', p.reactors ? htmlEsc(p.reactors) : '—', accent)}
-          ${row('CAPACITY', p.capacityMW ? `${Number(p.capacityMW).toLocaleString()} MWe` : '—')}
+          ${row('状态', htmlEsc(status) || '—', accent)}
+          ${row('所有者', htmlEsc(p.owner) || '—')}
+          ${row('反应堆', p.reactors ? htmlEsc(p.reactors) : '—', accent)}
+          ${row('容量', p.capacityMW ? `${Number(p.capacityMW).toLocaleString()} MWe` : '—')}
         </div>
         <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);font-size:9px;color:#5C5A54;">
           ${coords[1].toFixed(3)}°, ${coords[0].toFixed(3)}°
@@ -1584,8 +1584,8 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       const congestionHtml = p.congestion ? `
         <div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.1);">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
-            <div><span style="color:#5C5A54;font-size:9px;">CONGESTION</span><br/><span style="color:${p.congestion === 'SEVERE' ? '#FF1744' : p.congestion === 'CONGESTED' ? '#FF9500' : '#00E676'};font-weight:bold;font-size:10px;">${p.congestion}</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">EST. DWELL TIME</span><br/><span style="color:#E8E6E0;font-weight:bold;font-size:10px;">${p.dwell_time || 'Unknown'}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">拥堵度</span><br/><span style="color:${p.congestion === 'SEVERE' ? '#FF1744' : p.congestion === 'CONGESTED' ? '#FF9500' : '#00E676'};font-weight:bold;font-size:10px;">${p.congestion}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">预计停留时间</span><br/><span style="color:#E8E6E0;font-weight:bold;font-size:10px;">${p.dwell_time || '未知'}</span></div>
           </div>
         </div>` : '';
 

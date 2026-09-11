@@ -12,6 +12,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createGeminiClient, rotateApiKey } from '@/lib/ai-engine';
+import { translateText } from '@/lib/translate';
 
 export const dynamic = 'force-dynamic';
 
@@ -266,6 +267,9 @@ export async function POST(request: NextRequest) {
     if (overview) generatedBy = 'gemini';
   }
   if (!overview) overview = heuristicOverview(mode, digest);
+
+  // 翻译 AI 概览文本（Gemini 默认输出英文，需翻译为中文）
+  if (overview) overview = await translateText(overview);
 
   return NextResponse.json({
     mode,

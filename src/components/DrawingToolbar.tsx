@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -76,33 +76,33 @@ export function getNextColor(existing: DrawnShape[]): string {
 function formatRelativeTime(ms: number) {
   const diff = Date.now() - ms;
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return '刚刚';
+  if (mins < 60) return `${mins} 分钟前`;
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return `${hours} 小时前`;
+  return `${Math.floor(hours / 24)} 天前`;
 }
 
 const MODES = [
-  { id: 'polygon' as const,   label: 'AREA',   Icon: Pentagon, blurb: 'Any shape, corner by corner' },
-  { id: 'rectangle' as const, label: 'BOX',    Icon: Square,   blurb: 'Two clicks, opposite corners' },
-  { id: 'circle' as const,    label: 'RADIUS', Icon: Circle,   blurb: 'Centre, then distance out' },
-  { id: 'line' as const,      label: 'PATH',   Icon: Spline,   blurb: 'Measure a route' },
+  { id: 'polygon' as const,   label: '区域',   Icon: Pentagon, blurb: '任意形状，逐点绘制' },
+  { id: 'rectangle' as const, label: '矩形',    Icon: Square,   blurb: '两次点击，对角确定' },
+  { id: 'circle' as const,    label: '圆形', Icon: Circle,   blurb: '先点圆心，再设半径' },
+  { id: 'line' as const,      label: '路径',   Icon: Spline,   blurb: '测量路线' },
 ];
 
 const MODE_HINT: Record<DrawMode, string> = {
-  polygon: 'Click the first corner',
-  rectangle: 'Click one corner',
-  circle: 'Click the centre',
-  line: 'Click the start point',
+  polygon: '点击第一个角点',
+  rectangle: '点击一个角点',
+  circle: '点击圆心',
+  line: '点击起点',
 };
 
 // Spelling the keys out matters: nobody guesses that Backspace undoes a vertex.
 const KEY_HINT: Record<DrawMode, string> = {
-  polygon: 'Double-click or Enter to close · Backspace undoes · Esc cancels',
-  rectangle: 'Second click completes the box · Esc cancels',
-  circle: 'Second click sets the radius · Esc cancels',
-  line: 'Double-click or Enter to end · Backspace undoes · Esc cancels',
+  polygon: '双击或回车闭合 · Backspace 撤销 · Esc 取消',
+  rectangle: '第二次点击完成矩形 · Esc 取消',
+  circle: '第二次点击设置半径 · Esc 取消',
+  line: '双击或回车结束 · Backspace 撤销 · Esc 取消',
 };
 
 export default function DrawingToolbar({
@@ -157,7 +157,7 @@ export default function DrawingToolbar({
   const totalPerim = polygons.reduce((sum, p) => sum + p.perimeterKm, 0);
 
   return (
-    <div className="pointer-events-auto">
+    <div className="点er-events-auto">
       <div 
         className="w-[280px] bg-black/90 backdrop-blur-xl border rounded-lg overflow-hidden flex flex-col glass-panel transition-all duration-500"
         style={{
@@ -171,17 +171,17 @@ export default function DrawingToolbar({
         <div className="px-4 py-3 border-b border-white/[0.06]">
           <div className="flex items-center gap-2 mb-2">
             <Pentagon className="w-3.5 h-3.5 text-[var(--cyan-primary)]" />
-            <span className="text-[12px] font-mono tracking-[0.2em] text-white/90 font-bold">DRAWING TOOLS</span>
+            <span className="text-[12px] font-mono tracking-[0.2em] text-white/90 font-bold">绘制工具</span>
           </div>
           
           <div className="flex items-center justify-between text-[10px] font-mono text-white/50 bg-white/5 rounded px-2 py-1.5 border border-white/[0.04]">
             <div className="flex flex-col">
-              <span className="text-[10px] tracking-wider mb-0.5 uppercase">Tracked Area</span>
+              <span className="text-[10px] tracking-wider mb-0.5 uppercase">覆盖面积</span>
               <span className="text-[12px] text-[var(--cyan-primary)] font-bold">{totalArea.toFixed(1)} km²</span>
             </div>
             <div className="w-[1px] h-6 bg-white/10" />
             <div className="flex flex-col text-right">
-              <span className="text-[10px] tracking-wider mb-0.5 uppercase">AOIs / Perim</span>
+              <span className="text-[10px] tracking-wider mb-0.5 uppercase">AOI / 周长</span>
               <span className="text-[12px] text-white/80">{polygons.length} / {totalPerim.toFixed(1)}km</span>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function DrawingToolbar({
               without it, nothing tells you a mode must be picked before the map
               will respond to a click. */}
           <p className="text-[10px] font-mono tracking-[0.18em] text-white/40 mb-2">
-            {drawMode ? 'STEP 2 — NOW CLICK THE MAP' : 'STEP 1 — CHOOSE A SHAPE'}
+            {drawMode ? '步骤 2 — 点击地图' : '步骤 1 — 选择形状'}
           </p>
           <div className="grid grid-cols-2 gap-1.5">
             {MODES.map(m => {
@@ -232,7 +232,7 @@ export default function DrawingToolbar({
                 <span className="w-1.5 h-1.5 rounded-full bg-[var(--cyan-primary)] animate-pulse flex-shrink-0" />
                 <span className="text-[10px] font-mono text-[var(--cyan-primary)] tracking-wider flex-1">
                   {progress
-                    ? `${progress.vertices} point${progress.vertices === 1 ? '' : 's'}`
+                    ? `${progress.vertices} 点${progress.vertices === 1 ? '' : 's'}`
                     : MODE_HINT[drawMode]}
                 </span>
                 {progress && progress.radiusKm != null && progress.radiusKm > 0 && (
@@ -267,11 +267,11 @@ export default function DrawingToolbar({
                     An empty state should say what to do next. */}
                 {drawMode ? (
                   <p className="text-[11px] font-mono text-[var(--cyan-primary)]/70 tracking-wider leading-relaxed">
-                    Now click on the map to place your first point.
+                    现在点击地图放置第一个点。
                   </p>
                 ) : (
                   <p className="text-[11px] font-mono text-white/35 tracking-wider leading-relaxed">
-                    Choose a shape above, then click the map<br />to measure an area and see what is inside it.
+                    先选择形状，再点击地图<br />测量区域并查看里面有什么。
                   </p>
                 )}
               </motion.div>
@@ -283,7 +283,7 @@ export default function DrawingToolbar({
                   animate={{ opacity: 1, x: 0, height: 'auto' }}
                   exit={{ opacity: 0, x: 20, height: 0 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className={`relative px-4 py-3 border-b border-white/[0.03] transition-colors cursor-pointer group ${
+                  className={`relative px-4 py-3 border-b border-white/[0.03] transition-colors cursor-点er group ${
                     selectedPolygon === polygon.id ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
                   }`}
                   onClick={() => onSelectPolygon(selectedPolygon === polygon.id ? null : polygon.id)}
@@ -322,7 +322,7 @@ export default function DrawingToolbar({
                       {onToggleWatch && polygon.geojson.geometry.type === 'Polygon' && (
                         <button
                           onClick={(e) => { e.stopPropagation(); onToggleWatch(polygon.id); }}
-                          title={watched?.has(polygon.id) ? 'Stop watching this area' : 'Watch for arrivals and departures'}
+                          title={watched?.has(polygon.id) ? '停止监视此区域' : '监视进出活动'}
                           className={`p-1.5 rounded transition ${
                             watched?.has(polygon.id)
                               ? 'bg-[var(--alert-green)]/20 text-[var(--alert-green)]'
@@ -363,12 +363,12 @@ export default function DrawingToolbar({
                     return (
                       <div className="mt-2 pt-2 border-t border-white/[0.06]">
                         <div className="flex items-baseline gap-2 mb-1.5">
-                          <span className="text-[10px] font-mono tracking-[0.2em] text-white/40">CONTENTS</span>
+                          <span className="text-[10px] font-mono tracking-[0.2em] text-white/40">内含物</span>
                           <span className="text-[11px] font-mono text-white tabular-nums">{report.total.toLocaleString()}</span>
                           <span className="text-[10px] font-mono text-white/30">object{report.total === 1 ? "" : "s"}</span>
                         </div>
                         {report.total === 0 && (
-                          <p className="text-[10px] font-mono text-white/30 pb-1">Nothing tracked inside this area.</p>
+                          <p className="text-[10px] font-mono text-white/30 pb-1">此区域内暂无追踪对象。</p>
                         )}
                         {report.groups.map(g => (
                           <div key={g.key} className="mb-1.5">
@@ -394,7 +394,7 @@ export default function DrawingToolbar({
                                 ))}
                                 {g.count > MAX_ITEMS_PER_GROUP && (
                                   <p className="text-[10px] font-mono text-white/25 px-1 py-0.5">
-                                    +{(g.count - MAX_ITEMS_PER_GROUP).toLocaleString()} more not listed
+                                    +{(g.count - MAX_ITEMS_PER_GROUP).toLocaleString()} 个未列出
                                   </p>
                                 )}
                               </div>
@@ -409,8 +409,8 @@ export default function DrawingToolbar({
                               onClick={(e) => {
                                 e.stopPropagation();
                                 const stamp = new Date().toISOString().slice(0, 10);
-                                downloadFile(`${polygon.name.replace(/s+/g, "-")}-contents-${stamp}.csv`,
-                                  contentsToCSV(polygon, report), "text/csv");
+                                downloadFile(`${polygon.name.replace(/s+/g, "-")}-contents-${stamp}.CSV`,
+                                  contentsToCSV(polygon, report), "text/CSV");
                               }}
                               className="flex-1 flex items-center justify-center gap-1 py-1 rounded text-[10px] font-mono tracking-wider border border-white/10 text-white/60 hover:text-white hover:bg-white/[0.06] transition"
                             >
@@ -425,7 +425,7 @@ export default function DrawingToolbar({
                               }}
                               className="flex-1 flex items-center justify-center gap-1 py-1 rounded text-[10px] font-mono tracking-wider border border-white/10 text-white/60 hover:text-white hover:bg-white/[0.06] transition"
                             >
-                              <FileDown className="w-2.5 h-2.5" /> GEOJSON
+                              <FileDown className="w-2.5 h-2.5" /> GeoJSON
                             </button>
                           </div>
                         )}
@@ -445,14 +445,14 @@ export default function DrawingToolbar({
             <div className="flex items-center gap-2 px-3 py-1.5">
               <Radar className="w-3 h-3 text-[var(--alert-green)] animate-pulse" />
               <span className="text-[10px] font-mono tracking-[0.2em] text-[var(--alert-green)] flex-1">
-                WATCHING {watched.size}
+                监视中 {watched.size}
               </span>
-              <span className="text-[10px] font-mono text-white/30 tabular-nums">{watchEvents.length} events</span>
+              <span className="text-[10px] font-mono text-white/30 tabular-nums">{watchEvents.length} 次事件</span>
             </div>
             <div className="max-h-[120px] overflow-y-auto styled-scrollbar">
               {watchEvents.length === 0 ? (
                 <p className="px-3 pb-2 text-[10px] font-mono text-white/30">
-                  Baseline recorded. Movement in or out will appear here.
+                  基线已记录。进出区域的移动将显示在这里。
                 </p>
               ) : watchEvents.map(ev => (
                 <div key={ev.id} className="flex items-center gap-2 px-3 py-1 hover:bg-white/[0.03]">
@@ -476,14 +476,14 @@ export default function DrawingToolbar({
               className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded text-[10px] font-mono tracking-[0.2em] bg-[var(--cyan-primary)]/10 border border-[var(--cyan-primary)]/30 text-[var(--cyan-primary)]/80 hover:text-[var(--cyan-primary)] hover:bg-[var(--cyan-primary)]/20 hover:border-[var(--cyan-primary)]/50 transition"
             >
               <Download className="w-3 h-3" />
-              EXPORT GEOJSON
+              导出 GeoJSON
             </button>
             <button 
               onClick={onClearAll} 
               className="flex items-center justify-center gap-1.5 px-3 py-2 rounded text-[10px] font-mono tracking-widest bg-[#FF3D57]/10 border border-[#FF3D57]/20 text-[#FF3D57]/60 hover:text-[#FF3D57] hover:bg-[#FF3D57]/20 transition"
             >
               <Trash2 className="w-3 h-3" />
-              CLEAR
+              清除
             </button>
           </div>
         )}

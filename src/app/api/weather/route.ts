@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { stealthFetch } from '@/lib/stealthFetch';
+import { translateArrayFields } from '@/lib/translate';
 
 /**
  * OSIRIS — Severe Weather & Anomalies API
@@ -263,6 +264,9 @@ export async function GET() {
     if (!providerSucceeded) {
       return NextResponse.json({ events: [], error: 'Failed to fetch weather data' }, { status: 500 });
     }
+
+    // 翻译天气事件标题和描述
+    await translateArrayFields(events, ['title', 'type', 'area']);
 
     return NextResponse.json({
       events,

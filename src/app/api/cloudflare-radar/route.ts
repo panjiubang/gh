@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { centroidFor } from '@/lib/countryCentroids';
+import { translateArrayFields } from '@/lib/translate';
 
 export const dynamic = 'force-dynamic';
 
@@ -194,6 +195,9 @@ export async function GET(req: Request) {
       { status: 502 }
     );
   }
+
+  // 翻译中断事件描述和原因
+  await translateArrayFields(outages, ['description', 'cause']);
 
   return NextResponse.json(
     {

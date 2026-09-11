@@ -44,10 +44,10 @@ const EARTH_RADIUS_KM = 6371;
  * labelling it one would be worse than saying nothing.
  */
 function regime(altKm: number): { label: string; note: string } {
-  if (altKm < 2000) return { label: 'LEO', note: 'Low Earth orbit' };
-  if (altKm < 35000) return { label: 'MEO', note: 'Medium Earth orbit' };
-  if (altKm <= 36500) return { label: 'GEO', note: 'Geostationary belt' };
-  return { label: 'HEO', note: 'High / highly elliptical' };
+  if (altKm < 2000) return { label: 'LEO', note: '低地球轨道' };
+  if (altKm < 35000) return { label: 'MEO', note: '中地球轨道' };
+  if (altKm <= 36500) return { label: 'GEO', note: '地球同步带' };
+  return { label: 'HEO', note: '高椭圆轨道' };
 }
 
 /** Circular-orbit speed implied by the period; the point of it is scale, not precision. */
@@ -103,7 +103,7 @@ export default function SatelliteCard({ sat, onClose }: { sat: SatelliteDetail; 
             {sat.name}
           </div>
           <div className="truncate text-[9px] font-mono tracking-[0.12em] text-[var(--text-secondary)]">
-            {sat.mission || 'Unknown mission'}
+            {sat.mission || '未知任务'}
           </div>
         </div>
         <button
@@ -117,29 +117,29 @@ export default function SatelliteCard({ sat, onClose }: { sat: SatelliteDetail; 
       </div>
 
       <div className="grid grid-cols-2 gap-x-2.5 gap-y-2 px-2.5 py-2.5">
-        <Field label="ALTITUDE" value={`${Math.round(sat.alt).toLocaleString()} km`} color="var(--cyan-primary)" />
-        <Field label="ORBIT" value={shell.label} color={accent} />
+        <Field label="高度" value={`${Math.round(sat.alt).toLocaleString()} km`} color="var(--cyan-primary)" />
+        <Field label="轨道" value={shell.label} color={accent} />
         <Field
-          label="PERIOD"
+          label="周期"
           value={sat.periodMinutes ? period(sat.periodMinutes) : '—'}
         />
         <Field
-          label="SPEED"
+          label="速度"
           value={sat.periodMinutes ? `${speedKmS(sat.alt, sat.periodMinutes).toFixed(2)} km/s` : '—'}
         />
-        <Field label="LATITUDE" value={`${sat.lat.toFixed(3)}°`} />
-        <Field label="LONGITUDE" value={`${sat.lng.toFixed(3)}°`} />
-        <Field label="NORAD ID" value={sat.noradId || '—'} />
-        <Field label="CLASS" value={shell.note} />
+        <Field label="纬度" value={`${sat.lat.toFixed(3)}°`} />
+        <Field label="经度" value={`${sat.lng.toFixed(3)}°`} />
+        <Field label="NORAD" value={sat.noradId || '—'} />
+        <Field label="类别" value={shell.note} />
       </div>
 
       {/* What the globe is showing, so a missing track reads as a known state
           rather than as the selection having silently failed. */}
       <div className="flex items-center gap-1.5 border-t border-[var(--border-secondary)] px-2.5 py-1.5 text-[8px] font-mono tracking-[0.12em] text-[var(--text-muted)]">
         <Orbit className="h-2.5 w-2.5" />
-        {sat.track === 'loading' && <span>PLOTTING ORBIT…</span>}
-        {sat.track === 'ready' && <span style={{ color: accent }}>ORBIT TRACK ON GLOBE</span>}
-        {sat.track === 'unavailable' && <span>NO TRACK — TLE UNAVAILABLE</span>}
+        {sat.track === 'loading' && <span>绘制轨道中…</span>}
+        {sat.track === 'ready' && <span style={{ color: accent }}>轨道已绘制</span>}
+        {sat.track === 'unavailable' && <span>无轨道数据 — TLE 不可用</span>}
       </div>
 
       {sat.noradId && (
@@ -150,7 +150,7 @@ export default function SatelliteCard({ sat, onClose }: { sat: SatelliteDetail; 
           className="flex items-center justify-center gap-1.5 border-t px-2.5 py-2 text-[9px] font-mono tracking-[0.15em] transition-colors"
           style={{ borderColor: 'var(--border-secondary)', color: accent, background: `${accent}0a` }}
         >
-          TRACK ON N2YO <ExternalLink className="h-2.5 w-2.5" />
+          在 N2YO 上追踪 <ExternalLink className="h-2.5 w-2.5" />
         </a>
       )}
     </div>

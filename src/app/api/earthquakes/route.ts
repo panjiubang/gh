@@ -1,5 +1,6 @@
 
 import { NextResponse } from 'next/server';
+import { translateArrayFields } from '@/lib/translate';
 
 /**
  * OSIRIS — Earthquake Data API
@@ -39,6 +40,9 @@ export async function GET() {
         alert: props.alert,
       };
     });
+
+    // 翻译地震位置描述（如 "10km S of Rat Islands, Aleutian Islands, Alaska" → 中文）
+    await translateArrayFields(earthquakes, ['place']);
 
     return NextResponse.json({
       earthquakes,

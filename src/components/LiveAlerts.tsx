@@ -131,9 +131,9 @@ export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsPr
       >
         <div className="flex items-center gap-2">
           <Radio className="w-3.5 h-3.5 text-[#FF4081]" />
-          <span className="hud-text text-[11px] text-[var(--text-primary)]">LIVE ALERTS</span>
+          <span className="hud-text text-[11px] text-[var(--text-primary)]">实时警报</span>
           <span className="gotham-tag gotham-tag--high" style={{ fontSize: '9px', padding: '1px 5px' }}>{alerts.filter(a => a.type === 'news' || a.type === 'quake').length}</span>
-          <span className="gotham-tag gotham-tag--info" style={{ fontSize: '9px', padding: '1px 4px' }}>{BUILTIN_FEEDS.length} FEEDS</span>
+          <span className="gotham-tag gotham-tag--info" style={{ fontSize: '9px', padding: '1px 4px' }}>{BUILTIN_FEEDS.length} 直播源</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-[#FF4081] animate-osiris-pulse" />
@@ -161,7 +161,7 @@ export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsPr
                   onClick={() => setFilter(f)}
                   className={`px-3 py-1.5 rounded text-[11px] font-mono tracking-wider transition-all ${filter === f ? 'bg-[var(--cyan-primary)]/20 text-[var(--cyan-primary)] border border-[var(--cyan-primary)]/50' : 'text-[#8A8880] border border-transparent hover:text-[#E8E6E0] hover:bg-[#2A2A28]'}`}
                 >
-                  {f.toUpperCase()}
+                  {f === 'all' ? '全部' : f === 'news' ? '新闻' : f === 'quakes' ? '地震' : '直播'}
                 </button>
               ))}
             </div>
@@ -221,7 +221,7 @@ export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsPr
                               className="inline-flex items-center py-1.5 px-1.5 -mx-1 rounded text-[9px] font-mono text-[var(--cyan-primary)] hover:underline hover:bg-[var(--cyan-primary)]/10"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              SOURCE
+                              原文
                             </a>
                           )}
                         </div>
@@ -238,7 +238,7 @@ export default function LiveAlerts({ data, onLocate, onWatchFeed }: LiveAlertsPr
               </div>
               {filtered.length === 0 && (
                 <div className="text-center py-4 text-[11px] font-mono text-[var(--text-muted)]">
-                  No alerts for this filter
+                  此筛选条件下暂无警报
                 </div>
               )}
             </div>

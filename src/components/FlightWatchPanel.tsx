@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { X, Plane, Gauge, ArrowUp, Radio, Crosshair, Loader2 } from 'lucide-react';
@@ -196,7 +196,7 @@ function Row({ flight, telem, onRemove, onLocate, onDetail }: {
         {telem && (
           <button
             onClick={() => onLocate(telem.lat, telem.lng)}
-            title="Centre on this aircraft"
+            title="聚焦此飞机"
             className="p-0.5 text-[var(--text-muted)] hover:text-[var(--cyan-primary)] transition-colors"
           >
             <Crosshair className="w-3 h-3" />
@@ -204,8 +204,8 @@ function Row({ flight, telem, onRemove, onLocate, onDetail }: {
         )}
         <button
           onClick={() => onRemove(flight.icao24)}
-          title="Stop watching"
-          aria-label={`Stop watching ${flight.callsign || flight.icao24}`}
+          title="停止追踪"
+          aria-label={`停止追踪 ${flight.callsign || flight.icao24}`}
           className="p-0.5 text-[var(--text-muted)] hover:text-[var(--alert-red)] transition-colors"
         >
           <X className="w-3 h-3" />

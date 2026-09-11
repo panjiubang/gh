@@ -162,7 +162,7 @@ export default function GlobalStatusBar() {
             <XIcon />
           </a>
           {/* Documentation & API reference */}
-          <Link href="/docs" prefetch title="Documentation & API Reference" aria-label="Documentation & API Reference"
+          <Link href="/docs" prefetch title="文档与 API 参考" aria-label="文档与 API 参考"
             className="h-full px-3 flex items-center gap-1.5 bg-[var(--gold-primary)]/10 text-[var(--gold-primary)]/80 hover:text-[var(--gold-primary)] hover:bg-[var(--gold-primary)]/25 border-r border-white/[0.04] transition-all duration-200"
           >
             <DocsIcon />
@@ -212,7 +212,7 @@ export default function GlobalStatusBar() {
           {/* Status indicator */}
           <div className="h-full px-3 flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-[#00E676] animate-pulse" />
-            <span className="text-[#00E676]/70 text-[9px] tracking-[0.2em]">ONLINE</span>
+            <span className="text-[#00E676]/70 text-[9px] tracking-[0.2em]">在线</span>
           </div>
         </div>
       </div>

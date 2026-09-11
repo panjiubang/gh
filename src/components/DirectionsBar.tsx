@@ -84,9 +84,9 @@ interface DirectionsBarProps {
 }
 
 const MODES = [
-  { id: 'auto', label: 'Drive', Icon: Car },
-  { id: 'pedestrian', label: 'Walk', Icon: Footprints },
-  { id: 'bicycle', label: 'Bike', Icon: Bike },
+  { id: 'auto', label: '驾车', Icon: Car },
+  { id: 'pedestrian', label: '步行', Icon: Footprints },
+  { id: 'bicycle', label: '骑行', Icon: Bike },
 ] as const;
 
 export function formatDistance(m: number): string {
@@ -284,7 +284,7 @@ function PlaceInput({
       const lat = parseFloat(coord[1]);
       const lng = parseFloat(coord[2]);
       if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        setResults([{ label: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, lat, lng, kind: 'coordinate', context: 'Coordinates' }]);
+        setResults([{ label: `${lat.toFixed(5)}, ${lng.toFixed(5)}`, lat, lng, kind: 'coordinate', context: '坐标' }]);
         setOpen(true);
         return;
       }
@@ -362,8 +362,8 @@ function PlaceInput({
           type="button"
           onClick={onLocate}
           disabled={locating}
-          title="Use my location"
-          aria-label="Use my location"
+          title="使用我的位置"
+          aria-label="使用我的位置"
           className="absolute right-0 top-1/2 -translate-y-1/2 p-1.5 rounded text-[var(--text-muted)]
                      hover:text-[var(--alert-green)] hover:bg-[rgba(0,230,118,0.08)] transition-colors disabled:opacity-50"
         >
@@ -379,14 +379,14 @@ function PlaceInput({
         >
           {liveFix && (
             <button
-              onClick={() => choose({ label: 'Your location', lat: liveFix.lat, lng: liveFix.lng, kind: 'current', context: 'Live position' })}
+              onClick={() => choose({ label: '我的位置', lat: liveFix.lat, lng: liveFix.lng, kind: 'current', context: '实时位置' })}
               className="w-full text-left px-2.5 py-2 flex items-start gap-2 transition-colors
                          border-b border-[var(--border-secondary)] hover:bg-[rgba(0,230,118,0.08)]"
             >
               <KindIcon kind="current" />
               <span className="min-w-0">
-                <span className="block text-[11px] text-[var(--alert-green)]">Your location</span>
-                <span className="block text-[10px] text-[var(--text-muted)]">Live position</span>
+                <span className="block text-[11px] text-[var(--alert-green)]">我的位置</span>
+                <span className="block text-[10px] text-[var(--text-muted)]">实时位置</span>
               </span>
             </button>
           )}
@@ -461,7 +461,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
         setRoute(null);
         setRoutes([]);
         onRoute(null);
-        setError(data.error || 'No route found');
+        setError(data.error || '未找到路线');
       } else {
         const all: RouteResult[] = data.routes?.length ? data.routes : [data];
         setRoutes(all);
@@ -473,7 +473,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
       setRoute(null);
       setRoutes([]);
       onRoute(null);
-      setError('Routing service unreachable');
+      setError('路线服务不可用');
     }
     setLoading(false);
   }, [onRoute]);
@@ -498,7 +498,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
     }
 
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      setLocateError('This browser has no geolocation');
+      setLocateError('此浏览器不支持定位');
       return;
     }
 
@@ -516,7 +516,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
         setTracking(true);
       },
       () => {
-        setLocateError('Location permission denied — needs HTTPS or localhost');
+        setLocateError('位置权限被拒 — 需要 HTTPS 或 localhost');
         setTracking(false);
       },
       { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 },
@@ -558,7 +558,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
 
     if (browser) {
       const { latitude, longitude } = browser.coords;
-      apply(latitude, longitude, 'My location');
+      apply(latitude, longitude, '我的位置');
       setLocating(false);
       return;
     }
@@ -567,13 +567,13 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
       const res = await fetch('/api/geo');
       const d = await res.json();
       if (d?.lat && d?.lon) {
-        apply(d.lat, d.lon, d.city ? `Near ${d.city}` : 'Approximate location');
-        setLocateError('Approximate — from network location');
+        apply(d.lat, d.lon, d.city ? `附近 ${d.city}` : '大致位置');
+        setLocateError('近似位置 — 来自网络定位');
       } else {
-        setLocateError('Could not determine your location');
+        setLocateError('无法确定您的位置');
       }
     } catch {
-      setLocateError('Could not determine your location');
+      setLocateError('无法确定您的位置');
     }
     setLocating(false);
   }, [to, mode, runRoute, onLocate, stops, avoid]);
@@ -636,7 +636,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
           style={{ background: 'var(--gold-primary)', boxShadow: '0 0 8px rgba(var(--gold-rgb),0.6)' }}
         />
         <Route className="w-3.5 h-3.5 text-[var(--gold-primary)]" />
-        <h2 className="instrument-title flex-1">Route</h2>
+        <h2 className="instrument-title flex-1">路线</h2>
 
         {/* State at a glance: standby until both ends are set, then the leg. */}
         <span
@@ -649,7 +649,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
         <button
           onClick={toggleTracking}
           aria-pressed={tracking}
-          title={tracking ? 'Stop live tracking' : 'Track my location live'}
+          title={tracking ? '停止实时跟踪' : '实时定位跟踪'}
           className={`p-1.5 rounded transition-colors ${
             tracking
               ? 'text-[#4285F4] bg-[rgba(66,133,244,0.14)]'
@@ -663,7 +663,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
           <button
             onClick={() => { const n = !follow; setFollow(n); onFollowChange?.(n); }}
             aria-pressed={follow}
-            title={follow ? 'Stop following' : 'Keep the map centred on me'}
+            title={follow ? '停止跟随' : '保持地图居中于我'}
             className={`p-1.5 rounded transition-colors ${
               follow
                 ? 'text-[var(--gold-primary)] bg-[rgba(var(--gold-rgb),0.14)]'
@@ -706,7 +706,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
         <div className="flex-1 min-w-0 flex flex-col divide-y divide-[var(--border-secondary)]">
           <PlaceInput
             value={fromText} onChange={setFromText} onPick={pickFrom}
-            placeholder="Choose starting point" autoFocus
+            placeholder="选择起点" autoFocus
             biasLat={center?.lat} biasLng={center?.lng}
             onLocate={useMyLocation} locating={locating} liveFix={live}
           />
@@ -716,7 +716,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
                 value={v.text}
                 onChange={(t) => setVias((prev) => prev.map((x, j) => (j === i ? { ...x, text: t } : x)))}
                 onPick={(p) => pickVia(i, p)}
-                placeholder={`Stop ${i + 1}`}
+                placeholder={`途经点 ${i + 1}`}
                 biasLat={center?.lat} biasLng={center?.lng} liveFix={live}
               />
               <button
@@ -730,7 +730,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
           ))}
           <PlaceInput
             value={toText} onChange={setToText} onPick={pickTo}
-            placeholder="Choose destination"
+            placeholder="选择目的地"
             biasLat={center?.lat} biasLng={center?.lng} liveFix={live}
           />
         </div>
@@ -785,8 +785,8 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
 
         <button
           onClick={() => setVias((v) => [...v, { place: null, text: '' }])}
-          title="Add a stop"
-          aria-label="Add a stop"
+          title="添加途经点"
+          aria-label="添加途经点"
           className="p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--cyan-primary)]
                      hover:bg-[rgba(var(--cyan-rgb),0.08)] transition-colors flex-shrink-0"
         >
@@ -795,8 +795,8 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
         <button
           onClick={() => setShowOptions((o) => !o)}
           aria-pressed={showOptions}
-          title="Route options"
-          aria-label="Route options"
+          title="路线选项"
+          aria-label="路线选项"
           className={`p-1.5 rounded-md transition-colors flex-shrink-0 ${
             showOptions || avoid.tolls || avoid.highways || avoid.ferries
               ? 'text-[var(--gold-primary)] bg-[rgba(var(--gold-rgb),0.1)]'
@@ -820,7 +820,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
                   : 'border-[var(--border-secondary)] text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
               }`}
             >
-              Avoid {k}
+              避开 {k}
             </button>
           ))}
         </div>
@@ -851,7 +851,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
           <div className="px-3 py-4 text-center">
             <p className="text-[11px] text-[var(--alert-red)]">{error}</p>
             <p className="text-[10px] text-[var(--text-muted)] mt-1">
-              Try a different point, or switch travel mode.
+              尝试换一个地点，或切换出行方式。
             </p>
           </div>
         )}
@@ -859,19 +859,19 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
         {!loading && !error && !route && (
           <div className="px-3 py-4">
             {ready ? (
-              <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">Calculating…</p>
+              <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">计算中…</p>
             ) : (
               <>
-                <p className="hud-label mb-2">Accepted input</p>
+                <p className="hud-label mb-2">支持的输入</p>
                 {/* Showing the formats beats describing them: the sample is the
                     documentation, and it is scannable at a glance. */}
                 <div className="flex flex-wrap gap-1.5">
-                  <span className="instrument-sample">Heathrow</span>
-                  <span className="instrument-sample">10 Downing St</span>
+                  <span className="instrument-sample">希思罗机场</span>
+                  <span className="instrument-sample">唐宁街 10 号</span>
                   <span className="instrument-sample">51.5074,-0.1278</span>
                 </div>
                 <p className="mt-2.5 text-[11px] text-[var(--text-muted)] leading-relaxed">
-                  Set a start and a destination to plot a route.
+                  设置起点和终点以规划路线。
                 </p>
               </>
             )}
@@ -884,7 +884,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
               <div className="px-3 py-2.5 border-b border-[var(--border-secondary)] bg-[rgba(66,133,244,0.07)]">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <Navigation className="w-2.5 h-2.5 text-[#4285F4]" />
-                  <span className="text-[9px] uppercase tracking-[0.15em] text-[#4285F4]">Next turn</span>
+                  <span className="text-[9px] uppercase tracking-[0.15em] text-[#4285F4]">下一个转弯</span>
                 </div>
                 <div className="flex items-start gap-2.5">
                   <span className="mt-0.5 flex-shrink-0"><StepIcon type={guidance.step.type} /></span>
@@ -923,9 +923,9 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
 
               {(route.hasToll || route.hasHighway || route.hasFerry) && (
                 <div className="flex gap-1.5 mt-2">
-                  {route.hasToll && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider border border-[var(--border-secondary)] text-[var(--alert-orange)]">Toll</span>}
-                  {route.hasHighway && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider border border-[var(--border-secondary)] text-[var(--text-muted)]">Motorway</span>}
-                  {route.hasFerry && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider border border-[var(--border-secondary)] text-[var(--cyan-primary)]">Ferry</span>}
+                  {route.hasToll && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider border border-[var(--border-secondary)] text-[var(--alert-orange)]">收费</span>}
+                  {route.hasHighway && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider border border-[var(--border-secondary)] text-[var(--text-muted)]">高速</span>}
+                  {route.hasFerry && <span className="px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider border border-[var(--border-secondary)] text-[var(--cyan-primary)]">渡轮</span>}
                 </div>
               )}
 
@@ -933,7 +933,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
                 <div className="mt-2.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="flex items-center gap-1 text-[9px] uppercase tracking-[0.15em] text-[var(--text-muted)]">
-                      <Mountain className="w-2.5 h-2.5" /> Elevation
+                      <Mountain className="w-2.5 h-2.5" /> 海拔
                     </span>
                     <span className="text-[10px] text-[var(--text-secondary)] tabular-nums">
                       ↑{route.ascent ?? 0} m · ↓{route.descent ?? 0} m
@@ -962,7 +962,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
                              hover:bg-[rgba(66,133,244,0.24)] transition-colors"
                 >
                   <Play className="w-3.5 h-3.5" />
-                  Start navigation
+                  开始导航
                 </button>
               )}
 
@@ -996,7 +996,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
                       >
                         <span className="block tabular-nums">{formatDuration(r.duration)}</span>
                         <span className="block text-[9px] opacity-70 tabular-nums">
-                          {i === 0 ? 'Fastest' : slower > 0 ? `+${slower} min` : formatDistance(r.distance)}
+                          {i === 0 ? '最快' : slower > 0 ? `+${slower} 分` : formatDistance(r.distance)}
                         </span>
                       </button>
                     );
@@ -1038,7 +1038,7 @@ export default function DirectionsBar({ onRoute, onLocate, onClose, center = nul
             </ol>
 
             <p className="px-3 py-2 text-[9px] text-[var(--text-muted)] tracking-wider uppercase border-t border-[var(--border-secondary)]">
-              Routing via {route.provider} · OpenStreetMap
+              路线由 {route.provider} 提供 · OpenStreetMap
             </p>
           </>
         )}

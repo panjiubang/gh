@@ -32,20 +32,20 @@ interface SpaceFeed {
 const FEEDS: SpaceFeed[] = [
   {
     id: 'sen-4k',
-    label: '4K EARTH',
-    detail: "Sen · 4K cameras mounted on the ISS",
+    label: '4K 地球',
+    detail: "Sen · 安装于国际空间站的 4K 摄像头",
     videoId: 'fO9e9jnhYK8',
   },
   {
     id: 'iss-earth',
-    label: 'EARTH VIEW',
-    detail: 'ISS external camera · nadir',
+    label: '地球视图',
+    detail: '国际空间站外部摄像头 ·  nadir',
     videoId: 'tj4knR4r1UU',
   },
   {
     id: 'iss-overview',
-    label: 'OVERVIEW CAM',
-    detail: 'ISS overview camera · wide',
+    label: '全景摄像头',
+    detail: '国际空间站全景摄像头 · 广角',
     videoId: 'OKQEMp2555A',
   },
 ];
@@ -97,7 +97,7 @@ export default function SpaceCam() {
       <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--border-secondary)]/40">
         <Radio className="w-3.5 h-3.5 text-[#00E5FF]" />
         <span className="text-[11px] font-mono font-bold tracking-widest text-[#00E5FF]">
-          LIVE FROM SPACE
+          来自太空的直播
         </span>
         <span className="ml-auto flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-[#FF3D3D] animate-pulse" />
@@ -105,7 +105,7 @@ export default function SpaceCam() {
         </span>
         <button
           onClick={() => setExpanded(true)}
-          title="Expand — a bigger player is what makes YouTube serve HD"
+          title="展开 — 更大的播放器才能触发 YouTube 提供高清"
           className="ml-1 p-1 rounded hover:bg-[var(--hover-accent)] text-[var(--text-muted)] hover:text-[#00E5FF] transition-colors"
         >
           <Maximize2 className="w-3 h-3" />
@@ -127,7 +127,7 @@ export default function SpaceCam() {
           onClick={() => setExpanded(true)}
           className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-mono tracking-wider text-[#00E5FF] opacity-0 group-hover/player:opacity-100 transition-opacity"
         >
-          EXPAND FOR HD ↗
+          展开以观看高清 ↗
         </button>
       </div>
 
@@ -153,7 +153,7 @@ export default function SpaceCam() {
         <div className="min-w-0">
           <div className="text-[10px] font-mono text-[var(--text-secondary)] truncate">{active.detail}</div>
           <div className="text-[9px] font-mono text-[var(--text-muted)]">
-            ALT ~{ORBIT_ALT_KM} KM · ORBIT ~93 MIN
+            ALT ~{ORBIT_ALT_KM} 公里 · 轨道周期 ~93 分
           </div>
         </div>
         <a
@@ -162,7 +162,7 @@ export default function SpaceCam() {
           rel="noopener noreferrer"
           className="flex items-center gap-1 px-2 py-1 rounded border border-[var(--border-secondary)]/40 text-[9px] font-mono text-[var(--text-muted)] hover:text-[#00E5FF] hover:border-[#00E5FF]/40 transition-colors flex-shrink-0"
         >
-          SOURCE <ExternalLink className="w-2.5 h-2.5" />
+          来源 <ExternalLink className="w-2.5 h-2.5" />
         </a>
       </div>
 
@@ -178,7 +178,7 @@ export default function SpaceCam() {
             <div className="flex items-center gap-2 mb-2">
               <Radio className="w-4 h-4 text-[#00E5FF]" />
               <span className="text-[11px] font-mono font-bold tracking-widest text-[#00E5FF]">
-                LIVE FROM SPACE
+                来自太空的直播
               </span>
               <span className="text-[11px] font-mono text-[var(--text-muted)]">· {active.detail}</span>
               <span className="ml-auto flex items-center gap-1">
@@ -187,7 +187,7 @@ export default function SpaceCam() {
               </span>
               <button
                 onClick={() => setExpanded(false)}
-                title="Close (Esc)"
+                title="关闭 (Esc)"
                 className="p-1.5 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -226,7 +226,7 @@ export default function SpaceCam() {
                 </button>
               ))}
               <span className="ml-auto text-[10px] font-mono text-[var(--text-muted)]">
-                ALT ~{ORBIT_ALT_KM} KM · ORBIT ~93 MIN · ESC TO CLOSE
+                ALT ~{ORBIT_ALT_KM} 公里 · 轨道周期 ~93 分 · 按 Esc 关闭
               </span>
             </div>
           </div>

@@ -53,98 +53,98 @@ const LAYER_GROUPS: LayerGroupDef[] = [
     fullLabel: '观寰 SDK',
     icon: Network,
     layers: [
-      { key: 'sdk_sea', label: 'Maritime Lines', dataKey: 'sdk_entities' },
+      { key: 'sdk_sea', label: '海运航线', dataKey: 'sdk_entities' },
     ],
   },
   {
     label: 'AVIATION',
-    fullLabel: 'AVIATION',
+    fullLabel: '航空追踪',
     icon: Plane,
     layers: [
-      { key: 'flights', label: 'Commercial', dataKey: 'commercial_flights' },
-      { key: 'private', label: 'Private', dataKey: 'private_flights' },
-      { key: 'jets', label: 'Private Jets', dataKey: 'private_jets' },
-      { key: 'military', label: 'Military', dataKey: 'military_flights' },
+      { key: 'flights', label: '商用航班', dataKey: 'commercial_flights' },
+      { key: 'private', label: '私人飞机', dataKey: 'private_flights' },
+      { key: 'jets', label: '私人公务机', dataKey: 'private_jets' },
+      { key: 'military', label: '军用航空', dataKey: 'military_flights' },
     ],
   },
   {
     label: 'MARITIME',
-    fullLabel: 'MARITIME',
+    fullLabel: '海事监控',
     icon: Ship,
     layers: [
-      { key: 'maritime', label: 'Maritime / Naval', dataKey: 'maritime_ships,maritime_ports,maritime_chokepoints' },
-      { key: 'satellite_ships', label: 'SATELATE', dataKey: 'satellite_ships' },
+      { key: 'maritime', label: '海事 / 海军', dataKey: 'maritime_ships,maritime_ports,maritime_chokepoints' },
+      { key: 'satellite_ships', label: '卫星船舶', dataKey: 'satellite_ships' },
     ],
   },
   {
     label: 'SPACE',
-    fullLabel: 'SPACE TRACKING',
+    fullLabel: '空间追踪',
     icon: Satellite,
     layers: [
-      { key: 'satellites', label: 'All Satellites', dataKey: 'satellites' },
-      { key: 'sat_comms', label: 'Starlink / Comms', dataKey: 'satellites', catKey: 'comms' },
-      { key: 'sat_military', label: 'Military / Intel', dataKey: 'satellites', catKey: 'military' },
-      { key: 'sat_navigation', label: 'GPS / Navigation', dataKey: 'satellites', catKey: 'navigation' },
-      { key: 'sat_earth', label: 'Earth Observation', dataKey: 'satellites', catKey: 'earth_obs' },
-      { key: 'sat_science', label: 'Stations / Telescopes', dataKey: 'satellites', catKey: 'science' },
+      { key: 'satellites', label: '全部卫星', dataKey: 'satellites' },
+      { key: 'sat_comms', label: '星链 / 通信', dataKey: 'satellites', catKey: 'comms' },
+      { key: 'sat_military', label: '军用 / 侦察', dataKey: 'satellites', catKey: 'military' },
+      { key: 'sat_navigation', label: 'GPS / 导航', dataKey: 'satellites', catKey: 'navigation' },
+      { key: 'sat_earth', label: '对地观测', dataKey: 'satellites', catKey: 'earth_obs' },
+      { key: 'sat_science', label: '空间站 / 望远镜', dataKey: 'satellites', catKey: 'science' },
     ],
   },
   {
     label: 'SURVEIL',
-    fullLabel: 'SURVEILLANCE',
+    fullLabel: '视频监控',
     icon: Camera,
     layers: [
-      { key: 'cctv', label: 'CCTV Cameras', dataKey: 'cameras' },
-      { key: 'cctv_previews', label: 'Live Previews', dataKey: '', parent: 'cctv' },
-      { key: 'live_news', label: 'Live News Feeds', dataKey: 'live_feeds' },
+      { key: 'cctv', label: '监控摄像头', dataKey: 'cameras' },
+      { key: 'cctv_previews', label: '实时预览', dataKey: '', parent: 'cctv' },
+      { key: 'live_news', label: '新闻直播流', dataKey: 'live_feeds' },
     ],
   },
   {
     label: 'HAZARD',
-    fullLabel: 'NATURAL HAZARDS',
+    fullLabel: '自然灾害',
     icon: CloudLightning,
     layers: [
-      { key: 'earthquakes', label: 'Earthquakes', dataKey: 'earthquakes' },
-      { key: 'fires', label: 'Active Fires', dataKey: 'fires' },
-      { key: 'weather', label: 'Severe Weather', dataKey: 'weather_events' },
+      { key: 'earthquakes', label: '地震活动', dataKey: 'earthquakes' },
+      { key: 'fires', label: '活跃火灾', dataKey: 'fires' },
+      { key: 'weather', label: '极端天气', dataKey: 'weather_events' },
     ],
   },
   {
     label: 'THREAT',
-    fullLabel: 'THREATS & INTEL',
+    fullLabel: '威胁情报',
     icon: AlertTriangle,
     layers: [
-      { key: 'infrastructure', label: 'Nuclear Facilities', dataKey: 'infrastructure' },
-      { key: 'global_incidents', label: 'Global Incidents', dataKey: 'gdelt' },
-      { key: 'gdelt_events', label: 'GDELT Events', dataKey: 'gdelt_events' },
+      { key: 'infrastructure', label: '核设施', dataKey: 'infrastructure' },
+      { key: 'global_incidents', label: '全球事件', dataKey: 'gdelt' },
+      { key: 'gdelt_events', label: 'GDELT 事件', dataKey: 'gdelt_events' },
     ],
   },
   {
     label: 'NETWORK',
-    fullLabel: 'NETWORK INTEL',
+    fullLabel: '网络情报',
     icon: Network,
     layers: [
-      { key: 'malware', label: 'Live Malware', dataKey: 'malware_threats' },
-      { key: 'cyber_attacks', label: 'Live Attacks', dataKey: 'cyber_attacks' },
+      { key: 'malware', label: '实时恶意软件', dataKey: 'malware_threats' },
+      { key: 'cyber_attacks', label: '实时网络攻击', dataKey: 'cyber_attacks' },
     ],
   },
   {
     label: 'NETINTEL',
-    fullLabel: 'NET & EVENT INTEL',
+    fullLabel: '网络与事件情报',
     icon: Megaphone,
     layers: [
-      { key: 'cf_outages', label: 'Internet Outages', dataKey: 'cf_outages', requires: 'cloudflare' },
-      { key: 'cf_attacks', label: 'Attack Origins', dataKey: 'cf_attack_origins', requires: 'cloudflare' },
+      { key: 'cf_outages', label: '互联网中断', dataKey: 'cf_outages', requires: 'cloudflare' },
+      { key: 'cf_attacks', label: '攻击来源', dataKey: 'cf_attack_origins', requires: 'cloudflare' },
     ],
   },
   {
     label: 'DISPLAY',
-    fullLabel: 'DISPLAY',
+    fullLabel: '显示设置',
     icon: Sun,
     layers: [
-      { key: 'day_night', label: 'Day / Night Cycle', dataKey: '' },
-      { key: 'terrain_3d', label: '3D Buildings', description: 'City detail · zoom 14.5+', dataKey: '' },
-      { key: 'terrain_elevation', label: '3D Terrain', description: 'Mountains · zoom 10+', dataKey: '' },
+      { key: 'day_night', label: '昼夜循环', dataKey: '' },
+      { key: 'terrain_3d', label: '3D 建筑', description: '城市细节 · 缩放 14.5+', dataKey: '' },
+      { key: 'terrain_elevation', label: '3D 地形', description: '山脉地形 · 缩放 10+', dataKey: '' },
     ],
   },
 ];
@@ -221,11 +221,11 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
   };
   const terrainDetails = activeLayers.terrain_elevation ? (
     <div className="mt-2 rounded-lg border border-white/10 bg-white/[0.03] p-2.5 text-[10px] text-white/60">
-      <p role="status">{terrainStatus === 'idle' ? `Terrain at zoom ${TERRAIN_MIN_ZOOM}+ · zoom in` : terrainStatus === 'waiting' ? 'Terrain starts when you stop moving' : terrainStatus === 'loading' ? 'Loading nearby terrain…' : terrainStatus === 'error' ? 'Terrain unavailable; the map is still usable.' : 'Terrain on'}</p>
-      {terrainStatus === 'idle' && <button type="button" onClick={onTerrainFocus} className="mt-2 min-h-8 rounded border border-white/15 px-2 text-[var(--gold-primary)] hover:bg-white/10">Zoom to terrain</button>}
-      {terrainStatus === 'error' && <button type="button" onClick={onTerrainRetry} className="mt-2 min-h-8 rounded border border-white/15 px-2 text-[var(--gold-primary)] hover:bg-white/10">Retry terrain</button>}
-      <p className="mt-2 text-white/35">Nearby detail only · cached tiles</p>
-      <a className="mt-1 inline-block underline underline-offset-2" href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noopener noreferrer">Terrain credits</a>
+      <p role="status">{terrainStatus === 'idle' ? `地形需缩放至 ${TERRAIN_MIN_ZOOM}+ 级` : terrainStatus === 'waiting' ? '停止移动后加载地形' : terrainStatus === 'loading' ? '正在加载附近地形…' : terrainStatus === 'error' ? '地形不可用，地图仍可正常使用' : '地形已开启'}</p>
+      {terrainStatus === 'idle' && <button type="button" onClick={onTerrainFocus} className="mt-2 min-h-8 rounded border border-white/15 px-2 text-[var(--gold-primary)] hover:bg-white/10">缩放至地形</button>}
+      {terrainStatus === 'error' && <button type="button" onClick={onTerrainRetry} className="mt-2 min-h-8 rounded border border-white/15 px-2 text-[var(--gold-primary)] hover:bg-white/10">重试加载</button>}
+      <p className="mt-2 text-white/35">仅显示附近细节 · 已缓存瓦片</p>
+      <a className="mt-1 inline-block underline underline-offset-2" href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noopener noreferrer">地形数据来源</a>
     </div>
   ) : null;
 
@@ -311,7 +311,7 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
 
         {/* MOBILE STYLE STUDIO */}
         <div className="flex items-center justify-between mt-2 pt-3 border-t border-white/[0.06] px-1">
-          <span className="text-[10px] font-mono tracking-[0.2em] text-white/25 uppercase">Style Studio</span>
+          <span className="text-[10px] font-mono tracking-[0.2em] text-white/25 uppercase">样式工作室</span>
           <button
             onClick={() => setStudioOpen(o => !o)}
             aria-pressed={studioOpen}
@@ -331,7 +331,7 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
         {/* MOBILE GHOST TOGGLE */}
         {setTheme && (
           <div className="flex items-center justify-between pt-3 border-t border-white/[0.06] px-1">
-            <span className="text-[10px] font-mono tracking-[0.2em] text-white/25 uppercase">Ghost Protocol</span>
+              <span className="text-[10px] font-mono tracking-[0.2em] text-white/25 uppercase">幽灵模式</span>
             <button
               onClick={() => setTheme(theme === 'core' ? 'ghost' : 'core')}
               className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
@@ -387,7 +387,7 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
               <button
                 onClick={() => setPinnedGroup(isPinned ? null : group.label)}
                 aria-expanded={isOpen}
-                aria-label={`${group.fullLabel}${activeCount ? ` — ${activeCount} active` : ''}`}
+                aria-label={`${group.fullLabel}${activeCount ? ` · ${activeCount} 项已启用` : ''}`}
                 title={group.fullLabel}
                 className="relative w-10 h-10 flex items-center justify-center cursor-pointer rounded-lg transition-all duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-white/40"
                 style={{
@@ -453,12 +453,12 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
                         onClick={(e) => { e.stopPropagation(); toggleGroup(group.layers); }}
                         className="px-1.5 py-0.5 rounded text-[10px] font-mono tracking-wider text-white/40 hover:text-white hover:bg-white/10 transition-colors"
                       >
-                        {activeCount > 0 ? 'NONE' : 'ALL'}
+                        {activeCount > 0 ? '全关' : '全开'}
                       </button>
                       {isPinned && (
                         <button
                           onClick={(e) => { e.stopPropagation(); setPinnedGroup(null); }}
-                          aria-label="Close"
+                          aria-label="关闭"
                           className="px-1.5 py-0.5 rounded text-[10px] font-mono text-white/40 hover:text-white hover:bg-white/10 transition-colors"
                         >
                           ✕
@@ -477,7 +477,7 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
                             onClick={() => toggle(layer.key)}
                             aria-pressed={!!isLayerActive}
                             aria-label={layer.label}
-                            title={dormant ? 'Turn the layer above on to use this' : undefined}
+                            title={dormant ? '需先开启上方主图层' : undefined}
                             className={`relative w-full flex items-center gap-3 py-1.5 rounded-md hover:bg-white/[0.05] transition-colors cursor-pointer text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${layer.parent ? 'pl-[22px] pr-1' : 'px-1'} ${dormant ? 'opacity-40' : ''}`}
                           >
                             {layer.parent && <SubLayerStem />}
@@ -513,7 +513,7 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
         aria-pressed={studioOpen}
         className="w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-500 cursor-pointer"
         style={{ background: studioOpen ? 'var(--hover-accent)' : 'transparent' }}
-        title="Style Studio"
+        title="样式工作室"
       >
         <SlidersHorizontal
           className="transition-all duration-500"
@@ -537,7 +537,7 @@ function LayerPanel({ data, activeLayers, setActiveLayers, isMobile, theme = 'co
           style={{
             background: theme === 'ghost' ? 'rgba(179, 136, 255, 0.1)' : 'transparent',
           }}
-          title="Ghost Protocol"
+          title="幽灵模式"
         >
           <Ghost
             className="transition-all duration-500"

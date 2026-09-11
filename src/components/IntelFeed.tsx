@@ -22,10 +22,10 @@ function getRiskClass(score: number): string {
 }
 
 function getRiskLabel(score: number): string {
-  if (score >= 8) return 'CRITICAL';
-  if (score >= 6) return 'HIGH';
-  if (score >= 4) return 'ELEVATED';
-  return 'LOW';
+  if (score >= 8) return '严重';
+  if (score >= 6) return '高';
+  if (score >= 4) return '较高';
+  return '低';
 }
 
 function timeAgo(dateStr: string): string {
@@ -33,10 +33,10 @@ function timeAgo(dateStr: string): string {
     const date = new Date(dateStr);
     const diff = Date.now() - date.getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `${mins}m ago`;
+    if (mins < 60) return `${mins} 分钟前`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    return `${Math.floor(hrs / 24)}d ago`;
+    if (hrs < 24) return `${hrs} 小时前`;
+    return `${Math.floor(hrs / 24)} 天前`;
   } catch {
     return '';
   }
@@ -61,10 +61,10 @@ export default function IntelFeed({ data, onLocate }: IntelFeedProps) {
       >
         <div className="flex items-center gap-2">
           <Newspaper className="w-3.5 h-3.5 text-[var(--gold-primary)]" />
-          <span className="hud-text text-[11px] text-[var(--text-primary)]">SIGINT FEED</span>
+          <span className="hud-text text-[11px] text-[var(--text-primary)]">信号情报源</span>
           <span className="gotham-tag gotham-tag--info" style={{ fontSize: '9px', padding: '1px 5px' }}>{news.length}</span>
           {news.some((n: any) => n.risk_score >= 8) && (
-            <span className="gotham-tag gotham-tag--critical" style={{ fontSize: '9px', padding: '1px 4px' }}>ALERTS</span>
+            <span className="gotham-tag gotham-tag--critical" style={{ fontSize: '9px', padding: '1px 4px' }}>警报</span>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export default function IntelFeed({ data, onLocate }: IntelFeedProps) {
               {news.length === 0 ? (
                 <div className="px-4 py-6 text-center">
                   <span className="text-[10px] font-mono text-[var(--text-muted)] tracking-widest">
-                    AWAITING INTELLIGENCE...
+                    等待情报信号...
                   </span>
                 </div>
               ) : (
@@ -155,7 +155,7 @@ export default function IntelFeed({ data, onLocate }: IntelFeedProps) {
                             onClick={(e) => e.stopPropagation()}
                           >
                             <ExternalLink className="w-2.5 h-2.5" />
-                            OPEN SOURCE
+                            开源
                           </a>
                         </motion.div>
                       )}

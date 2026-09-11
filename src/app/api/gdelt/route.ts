@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { stealthFetch } from '@/lib/stealthFetch';
+import { translateArrayFields } from '@/lib/translate';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
@@ -82,6 +83,9 @@ export async function GET() {
         type,
       });
     }
+
+    // 翻译事件名称和描述
+    await translateArrayFields(allEvents, ['name']);
 
     return NextResponse.json({
       events: allEvents,

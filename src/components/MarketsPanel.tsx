@@ -29,12 +29,12 @@ interface Quote {
 interface MarketsPanelProps { data: any; spaceWeather?: any; }
 
 const SECTIONS = [
-  { key: 'indices', label: 'INDICES', icon: LineChart },
-  { key: 'stocks', label: 'DEFENSE', icon: Shield },
-  { key: 'oil', label: 'ENERGY', icon: Droplets },
-  { key: 'commodities', label: 'COMMODITIES', icon: Gem },
-  { key: 'crypto', label: 'CRYPTO', icon: Bitcoin },
-  { key: 'fx', label: 'FX', icon: DollarSign },
+  { key: 'indices', label: '指数', icon: LineChart },
+  { key: 'stocks', label: '国防', icon: Shield },
+  { key: 'oil', label: '能源', icon: Droplets },
+  { key: 'commodities', label: '大宗', icon: Gem },
+  { key: 'crypto', label: '加密', icon: Bitcoin },
+  { key: 'fx', label: '外汇', icon: DollarSign },
 ];
 
 const GREEN = 'var(--alert-green)';
@@ -119,9 +119,9 @@ function useFeedAge(timestamp?: string): string | null {
   const ms = now - new Date(timestamp).getTime();
   if (!Number.isFinite(ms) || ms < 0) return null;
   const mins = Math.floor(ms / 60_000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  return `${Math.floor(mins / 60)}h ago`;
+  if (mins < 1) return '刚刚';
+  if (mins < 60) return `${mins}分钟前`;
+  return `${Math.floor(mins / 60)}小时前`;
 }
 
 export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) {
@@ -182,7 +182,7 @@ export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) 
   const breadthBlock = breadth && (
     <div className="px-2 py-1.5 rounded-lg border border-[var(--border-primary)] bg-white/[0.02]">
       <div className="flex items-center justify-between">
-        <span className="text-[9px] font-mono tracking-widest text-[var(--text-muted)]">BREADTH</span>
+        <span className="text-[9px] font-mono tracking-widest text-[var(--text-muted)]">广度</span>
         <span className="text-[10px] font-mono tabular-nums">
           <span style={{ color: GREEN }}>{breadth.up}▲</span>
           <span className="text-[var(--text-muted)]"> / </span>
@@ -205,7 +205,7 @@ export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <Zap className="w-3 h-3" style={{ color: spaceWeather.storm_color }} />
-          <span className="text-[11px] font-mono tracking-widest text-[var(--text-muted)]">SPACE WEATHER</span>
+          <span className="text-[11px] font-mono tracking-widest text-[var(--text-muted)]">空间天气</span>
         </div>
         <span className="text-[11px] font-mono font-bold" style={{ color: spaceWeather.storm_color }}>
           Kp {spaceWeather.kp_index} — {spaceWeather.storm_level}
@@ -261,15 +261,15 @@ export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) 
     <div className="flex items-center justify-between px-2 py-1 shrink-0">
       <span className="flex items-center gap-1 text-[9px] font-mono tracking-widest text-[var(--text-muted)]">
         <span className="w-1 h-1 rounded-full" style={{ background: sessionOpen ? GREEN : 'var(--text-muted)' }} />
-        {sessionOpen ? 'SESSION OPEN' : 'SESSION CLOSED'}
+        {sessionOpen ? '交易中' : '已收盘'}
       </span>
       <button
         onClick={() => setSortByMove(v => !v)}
         className={`flex items-center gap-1 text-[9px] font-mono tracking-widest transition-colors ${sortByMove ? 'text-[var(--gold-primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
-        title={sortByMove ? 'Listed by biggest move' : 'Listed in feed order'}
+        title={sortByMove ? '按涨跌幅排序' : '按列表顺序'}
       >
         <ArrowUpDown className="w-2.5 h-2.5" />
-        {sortByMove ? 'BY MOVE' : 'DEFAULT'}
+        {sortByMove ? '按涨跌' : '默认'}
       </button>
     </div>
   );
@@ -291,10 +291,10 @@ export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) 
         feedLoaded ? (
           <div className="flex items-center justify-center gap-1.5 py-3 text-[10px] font-mono text-[var(--text-muted)]">
             <AlertTriangle className="w-3 h-3" />
-            {activeSection.toUpperCase()} FEED UNAVAILABLE — RETRYING
+            {activeSection.toUpperCase()} 行情不可用 — 正在重试
           </div>
         ) : (
-          <div className="text-center py-3 text-[11px] font-mono text-[var(--text-muted)]">Loading {activeSection}...</div>
+          <div className="text-center py-3 text-[11px] font-mono text-[var(--text-muted)]">加载中 {activeSection}…</div>
         )
       )}
     </>
@@ -323,16 +323,16 @@ export default function MarketsPanel({ data, spaceWeather }: MarketsPanelProps) 
             style={{ background: 'var(--gold-primary)', boxShadow: '0 0 8px rgba(var(--gold-rgb),0.6)' }}
           />
           <BarChart3 className="w-3.5 h-3.5 text-[var(--gold-primary)]" />
-          <span className="instrument-title">Markets &amp; Intel</span>
-          <span className="instrument-chip" style={{ color: 'var(--alert-green)' }}>Live</span>
+          <span className="instrument-title">情报面板</span>
+          <span className="instrument-chip" style={{ color: 'var(--alert-green)' }}>实时</span>
         </button>
         <div className="flex items-center gap-2">
           {age && <span className="text-[9px] font-mono text-[var(--text-muted)]">{age}</span>}
           <div className="w-1.5 h-1.5 rounded-full bg-[var(--alert-green)] animate-osiris-pulse" />
-          <button onClick={() => { setMaximized(!maximized); if (!expanded && !maximized) setExpanded(true); }} className="p-1.5 -m-0.5 rounded hover:text-white hover:bg-white/10 transition-colors" title={maximized ? "Restore" : "Maximize"}>
+          <button onClick={() => { setMaximized(!maximized); if (!expanded && !maximized) setExpanded(true); }} className="p-1.5 -m-0.5 rounded hover:text-white hover:bg-white/10 transition-colors" title={maximized ? "还原" : "最大化"}>
             {maximized ? <Minimize2 className="w-3.5 h-3.5 text-[var(--text-muted)]" /> : <Maximize2 className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
           </button>
-          <button onClick={() => setExpanded(!expanded)} title={expanded ? 'Collapse' : 'Expand'}>
+          <button onClick={() => setExpanded(!expanded)} title={expanded ? '收起' : '展开'}>
             {expanded ? <ChevronUp className="w-3.5 h-3.5 text-[var(--text-muted)]" /> : <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
           </button>
         </div>
