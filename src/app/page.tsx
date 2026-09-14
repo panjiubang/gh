@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, BarChart3, Newspaper, Search, X, Globe, MapPinned, Route, Radar, Satellite, Moon, ExternalLink, AlertTriangle, Activity, Database, Wifi, Play, Network, Crosshair, Bluetooth, Pentagon, Radio , PenLine } from 'lucide-react';
+import { Layers, BarChart3, Newspaper, Search, X, Globe, MapPinned, Route, Radar, Satellite, Moon, ExternalLink, AlertTriangle, Activity, Database, Wifi, Play, Network, Crosshair, Bluetooth, Pentagon, Radio , PenLine, Briefcase } from 'lucide-react';
 import { type TerrainStatus } from '@/lib/map-terrain';
 import { loadCameraCatalog, mergeCameraCatalog } from '@/lib/camera-catalog';
 import IntelFeed from '@/components/IntelFeed';
@@ -257,6 +257,7 @@ export default function Dashboard() {
   }, [navSession]);
   const [showRemote, setShowRemote] = useState(false);
   const [showArcGIS, setShowArcGIS] = useState(false);
+  const [showBizLinks, setShowBizLinks] = useState(false);
   const [arcgisLayers, setArcgisLayers] = useState<Array<{ id: string; title: string; url: string; geojson: any; color: string; visible: boolean; opacity: number }>>([]);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number; bounds?: { west: number; south: number; east: number; north: number } } | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -1538,6 +1539,57 @@ export default function Dashboard() {
                   });
                   if (devs.length > 0) setFlyToLocation({ lat: devs[0].lat, lng: devs[0].lng, ts: Date.now() });
                 }} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+
+        {/* Separator */}
+        <div className="w-4 h-px bg-white/10 mx-auto" />
+
+        {/* ── 专项业务 ── */}
+        <div className="relative group">
+          <button onClick={() => { setShowBizLinks(!showBizLinks); setShowRemote(false); setShowArcGIS(false); setShowIntel(false); setShowMarkets(false); setShowAlerts(false); setShowSpaceCam(false); setShowDrawing(false); setShowDesktopSearch(false); }} className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white/50 ${showBizLinks ? 'bg-[var(--gold-primary)]/20' : 'hover:bg-white/10'}`} title="专项业务 — 快速访问常用业务系统" aria-label="专项业务" aria-expanded={showBizLinks}>
+            <Briefcase className={`w-4 h-4 ${showBizLinks ? 'text-[var(--gold-primary)]' : 'text-white/60'}`} />
+            {showBizLinks && (
+              <span
+                aria-hidden="true"
+                className="absolute -right-1 top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-current text-[var(--gold-primary)]"
+              />
+            )}
+          </button>
+          <span className="absolute right-11 top-1/2 -translate-y-1/2 px-2 py-1 text-[9px] font-mono tracking-wider text-white/80 bg-black/80 backdrop-blur-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity pointer-events-none">专项业务</span>
+          <AnimatePresence>
+            {showBizLinks && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="absolute right-12 top-1/2 -translate-y-1/2 w-72">
+                <div className="glass-panel p-3">
+                  <div className="text-[9px] font-mono tracking-[0.2em] uppercase text-white/40 mb-2">专项业务</div>
+                  <div className="flex flex-col gap-1">
+                    {[
+                      { name: '静默专项分析', url: 'http://localhost:8765/pages/zssf-verify.html', desc: 'AIS 静默检测' },
+                      { name: 'ZS专题', url: 'http://127.0.0.1:8765/pages/zs-special.html', desc: 'ZS 专题分析' },
+                      { name: '卫星船舶数据', url: 'http://127.0.0.1:8765/pages/satellite-data.html', desc: '卫星船舶数据' },
+                      { name: '空间天气', url: 'https://www.spaceweather.gov', desc: 'NOAA 空间预警' },
+                      { name: '地震监测', url: 'https://earthquake.usgs.gov', desc: 'USGS 全球地震' },
+                      { name: '气象中心', url: 'https://www.windy.com', desc: '全球气象可视化' },
+                    ].map(link => (
+                      <a
+                        key={link.url}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between gap-3 px-3 py-2 rounded-md border border-white/[0.06] hover:border-[var(--gold-primary)]/40 hover:bg-white/[0.03] transition-colors group/link"
+                      >
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[11px] font-mono text-white/80 group-hover/link:text-[var(--gold-light)] transition-colors truncate">{link.name}</span>
+                          <span className="text-[9px] font-mono text-white/30 truncate">{link.desc}</span>
+                        </div>
+                        <ExternalLink className="w-3 h-3 text-white/30 group-hover/link:text-[var(--gold-primary)] shrink-0 transition-colors" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

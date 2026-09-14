@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // 隐藏开发模式下 Next.js 自带的路由指示器（Route/Bundler/Preferences 卡片）
+  devIndicators: false,
+  // React StrictMode 会在开发模式下双调用 useEffect，导致 MapLibre 地图实例
+  // 被创建后又立即 remove，第二个实例的 WebGL/worker 状态受影响后不再请求瓦片。
+  // ZssfPanel 与 OsirisMap 都会触发该行为，开发模式关闭以恢复瓦片加载。
+  reactStrictMode: false,
   turbopack: {
     rules: {
       'maplibre-gl.mjs': {
