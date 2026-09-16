@@ -3,8 +3,8 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import "./globals.css";
 
 const SITE_URL = "https://osirisai.live";
-const SITE_NAME = "观寰";
-const SITE_TITLE = "观寰 — Open Source Intelligence Platform | Live Flight Tracking, CCTV, OSINT Tools & More";
+const SITE_NAME = "星罗";
+const SITE_TITLE = "星罗 — Open Source Intelligence Platform | Live Flight Tracking, CCTV, OSINT Tools & More";
 const SITE_DESCRIPTION = "The open-source Palantir alternative. Track 10,000+ aircraft, 2,000 satellites, and worldwide CCTV cameras in real-time on a 3D globe. Run Nmap scans, DNS lookups, WHOIS queries, SSL cert analysis & threat intelligence — all from your browser. 20+ live data feeds including earthquakes, wildfires, nuclear facilities, cyber threats, and global conflicts. Free & open source.";
 
 export const viewport: Viewport = {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: SITE_TITLE,
-    template: "%s | 观寰 Intelligence",
+    template: "%s | 星罗 Intelligence",
   },
   description: SITE_DESCRIPTION,
   keywords: [
@@ -54,9 +54,9 @@ export const metadata: Metadata = {
     // Brand
     "osiris", "osirisai", "osirisai.live",
   ],
-  authors: [{ name: "观寰项目", url: SITE_URL }],
-  creator: "观寰项目",
-  publisher: "观寰项目",
+  authors: [{ name: "星罗项目", url: SITE_URL }],
+  creator: "星罗项目",
+  publisher: "星罗项目",
   robots: {
     index: true,
     follow: true,
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   openGraph: {
-    title: "观寰 — The Open-Source Palantir Alternative | Live Flights, CCTV, Satellites & OSINT Tools",
+    title: "星罗 — The Open-Source Palantir Alternative | Live Flights, CCTV, Satellites & OSINT Tools",
     description: "Track 10K+ aircraft, 2K satellites & worldwide CCTV on a 3D globe. Run Nmap, DNS, WHOIS & threat intel scans from your browser. 20+ live intelligence feeds. Free. Open source.",
     type: "website",
     siteName: SITE_NAME,
@@ -102,14 +102,14 @@ export const metadata: Metadata = {
         url: `${SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "观寰 — Open Source Intelligence Platform with Live Tracking & OSINT Tools",
+        alt: "星罗 — Open Source Intelligence Platform with Live Tracking & OSINT Tools",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "🛰️ 观寰 — Open Source Palantir Alternative | Live Tracking + OSINT Tools",
+    title: "🛰️ 星罗 — Open Source Palantir Alternative | Live Tracking + OSINT Tools",
     description: "Track 10K+ flights, satellites & CCTV worldwide. Run Nmap, DNS, WHOIS scans from your browser. 20+ live intel feeds. Free & open source.",
     creator: "@simplifaisoul",
     site: "@simplifaisoul",
@@ -120,7 +120,7 @@ export const metadata: Metadata = {
   other: {
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
-    "apple-mobile-web-app-title": "观寰",
+    "apple-mobile-web-app-title": "星罗",
     "mobile-web-app-capable": "yes",
     "msapplication-TileColor": "#06060C",
     "msapplication-config": "none",
@@ -131,8 +131,8 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "观寰 — OSINT Toolkit & Intelligence Platform",
-  alternateName: ["观寰", "观寰", "观寰 OSINT"],
+  name: "星罗 — OSINT Toolkit & Intelligence Platform",
+  alternateName: ["星罗", "星罗", "星罗 OSINT"],
   url: SITE_URL,
   description: SITE_DESCRIPTION,
   applicationCategory: "SecurityApplication",
@@ -169,7 +169,7 @@ const jsonLd = {
   screenshot: `${SITE_URL}/og-image.png`,
   author: {
     "@type": "Organization",
-    name: "观寰项目",
+    name: "星罗项目",
     url: SITE_URL,
   },
 };
@@ -198,7 +198,7 @@ export default function RootLayout({
 
       </head>
       <body className="antialiased">
-        <ErrorBoundary name="观寰 Core">
+        <ErrorBoundary name="星罗 Core">
           {children}
         </ErrorBoundary>
       </body>

@@ -50,7 +50,7 @@ interface LayerGroupDef {
 const LAYER_GROUPS: LayerGroupDef[] = [
   {
     label: 'SDK',
-    fullLabel: '观寰 SDK',
+    fullLabel: '星罗 SDK',
     icon: Network,
     layers: [
       { key: 'sdk_sea', label: '海运航线', dataKey: 'sdk_entities' },

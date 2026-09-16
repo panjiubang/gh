@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- *  观寰 — AI Intelligence Engine
+ *  星罗 — AI Intelligence Engine
  *  Gemini 2.0 Flash integration for real-time intelligence analysis
  *  Designed to correlate multi-domain feeds into actionable briefings
  * ═══════════════════════════════════════════════════════════════
@@ -73,7 +73,7 @@ export interface IntelligenceContext {
    System Prompt — Palantir-grade analyst persona
    ───────────────────────────────────────────────────────────── */
 
-const SYSTEM_PROMPT = `You are 观寰 Intelligence Analyst — a senior, elite intelligence analyst embedded within the 观寰 Global Intelligence Platform. You operate at the level of a Palantir Forward Deployed Engineer crossed with a CIA PDB (Presidential Daily Brief) analyst.
+const SYSTEM_PROMPT = `You are 星罗 Intelligence Analyst — a senior, elite intelligence analyst embedded within the 星罗 Global Intelligence Platform. You operate at the level of a Palantir Forward Deployed Engineer crossed with a CIA PDB (Presidential Daily Brief) analyst.
 
 ## YOUR ROLE
 - You correlate data across multiple intelligence feeds: seismic monitoring, OSINT news streams, global threat events, and cyber vulnerability databases
@@ -103,11 +103,11 @@ const SYSTEM_PROMPT = `You are 观寰 Intelligence Analyst — a senior, elite i
 - Flag when events may be connected vs. coincidental
 - You are an analyst, not a policymaker — present options, not directives
 
-You have access to the live intelligence context of the 观寰 platform. Analyze it with precision.`;
+You have access to the live intelligence context of the 星罗 platform. Analyze it with precision.`;
 
-const BRIEFING_PROMPT = `Generate a comprehensive 观寰 Daily Intelligence Briefing based on the current operational data. Structure it as follows:
+const BRIEFING_PROMPT = `Generate a comprehensive 星罗 Daily Intelligence Briefing based on the current operational data. Structure it as follows:
 
-## 观寰 INTELLIGENCE BRIEFING
+## 星罗 INTELLIGENCE BRIEFING
 **Classification:** OPEN SOURCE INTELLIGENCE (OSINT)
 **DTG:** [Current timestamp]
 

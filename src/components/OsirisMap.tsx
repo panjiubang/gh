@@ -1301,7 +1301,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
             <div><span style="color:#5C5A54;">出发地</span><br/><span style="color:#E8E6E0;">${htmlEsc(p.fromName || '起点')}</span></div>
             <div><span style="color:#5C5A54;">目的地</span><br/><span style="color:#E8E6E0;">${htmlEsc(p.toName || '终点')}</span></div>
             <div><span style="color:#5C5A54;">领域</span><br/><span style="color:${domainColor};">${p.domain}</span></div>
-            <div><span style="color:#5C5A54;">来源</span><br/><a href="${urlSafe(srcUrl)}" target="_blank" style="color:${domainColor};text-decoration:underline;cursor:pointer;">${htmlEsc(p.source || '观寰')}</a></div>
+            <div><span style="color:#5C5A54;">来源</span><br/><a href="${urlSafe(srcUrl)}" target="_blank" style="color:${domainColor};text-decoration:underline;cursor:pointer;">${htmlEsc(p.source || '星罗')}</a></div>
           </div>
           <a href="${urlSafe(srcUrl)}" target="_blank" style="${linkStyle}color:${domainColor};border:1px solid ${domainColor}40;background:${domainColor}18;display:inline-block;margin-top:4px;">开源来源 ↗</a>
         </div>`);

@@ -101,7 +101,7 @@ export async function translateBatch(texts: string[]): Promise<string[]> {
         translatedMap.set(orig, translated);
       });
     } catch (e) {
-      console.warn(`[观寰] DeepL 批量翻译失败，降级返回原文:`, e instanceof Error ? e.message : e);
+      console.warn(`[星罗] DeepL 批量翻译失败，降级返回原文:`, e instanceof Error ? e.message : e);
       // 降级：失败的部分返回原文
       batch.forEach(orig => translatedMap.set(orig, orig));
     }
@@ -125,7 +125,7 @@ async function doTranslate(text: string, _key: string): Promise<string> {
     cache.set(_key, { translated, expiresAt: Date.now() + CACHE_TTL_MS });
     return translated;
   } catch (e) {
-    console.warn(`[观寰] DeepL 翻译失败，降级返回原文:`, e instanceof Error ? e.message : e);
+    console.warn(`[星罗] DeepL 翻译失败，降级返回原文:`, e instanceof Error ? e.message : e);
     return text; // 降级
   }
 }
