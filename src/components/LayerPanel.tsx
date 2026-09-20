@@ -65,6 +65,7 @@ const LAYER_GROUPS: LayerGroupDef[] = [
       { key: 'private', label: '私人飞机', dataKey: 'private_flights' },
       { key: 'jets', label: '私人公务机', dataKey: 'private_jets' },
       { key: 'military', label: '军用航空', dataKey: 'military_flights' },
+      { key: 'hyd_aircraft', label: 'HYD飞机', dataKey: 'hyd_aircraft' },
     ],
   },
   {

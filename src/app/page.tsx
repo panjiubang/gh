@@ -296,6 +296,7 @@ export default function Dashboard() {
     private: false,
     jets: false,
     military: false,
+    hyd_aircraft: false,
     maritime: true,
     satellite_ships: false,
     satellites: false,
@@ -660,6 +661,11 @@ export default function Dashboard() {
         fetchEndpoint('/api/flights');
         layerFetchedRef.current.add('flights');
       }
+    }
+    // HYD aircraft — 黄岩岛飞机轨迹数据（独立 API，与航班数据分离）
+    if (activeLayers.hyd_aircraft && !layerFetchedRef.current.has('hyd_aircraft')) {
+      fetchEndpoint('/api/hyd-aircraft', d => ({ hyd_aircraft: d.aircraft }));
+      layerFetchedRef.current.add('hyd_aircraft');
     }
     // Satellites — pre-fetch regardless of layer activation so LayerPanel
     // category counts are always populated. The actual markers only appear

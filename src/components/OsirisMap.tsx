@@ -320,7 +320,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       createDot(map, 'dot-fire', isGhost ? phantomPurple : '#E65100', 10);
       createDot(map, 'dot-cctv', cameraColor, 10);
 
-      const sources = ['flights','military','jets','private-fl','satellites','earthquakes','gdelt','day-night','cctv','fires','weather','infrastructure','maritime','maritime-choke','maritime-ships','satellite-ships','live-news','conflict-zones', 'war-alerts-targets', 'war-alerts-lines', 'balloons', 'radiation', 'ip-sweep-devices', 'ip-sweep-pulse', 'ip-sweep-connections', 'scan-targets', 'sdk-entities', 'sdk-links', 'malware-nodes', 'malware-new', 'network-mesh', 'cyber-arcs', 'cyber-heads', 'cyber-impacts', 'gdelt-events', 'cf-outages', 'cf-attacks'];
+      const sources = ['flights','military','jets','private-fl','hyd-aircraft','satellites','earthquakes','gdelt','day-night','cctv','fires','weather','infrastructure','maritime','maritime-choke','maritime-ships','satellite-ships','live-news','conflict-zones', 'war-alerts-targets', 'war-alerts-lines', 'balloons', 'radiation', 'ip-sweep-devices', 'ip-sweep-pulse', 'ip-sweep-connections', 'scan-targets', 'sdk-entities', 'sdk-links', 'malware-nodes', 'malware-new', 'network-mesh', 'cyber-arcs', 'cyber-heads', 'cyber-impacts', 'gdelt-events', 'cf-outages', 'cf-attacks'];
       sources.forEach(s => map.addSource(s, { type: 'geojson', data: EMPTY_FC }));
 
       // ── FLIGHT ROUTE VISUALIZATION SOURCES & LAYERS ──
@@ -694,6 +694,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         { id: 'fl-private', src: 'private-fl', icon: 'plane-green' },
         { id: 'fl-jets', src: 'jets', icon: 'plane-pink' },
         { id: 'fl-military', src: 'military', icon: 'plane-red' },
+        { id: 'fl-hyd', src: 'hyd-aircraft', icon: 'plane-red' },
       ];
       flightLayers.forEach(l => {
         map.addLayer({ id: l.id, type: 'symbol', source: l.src, layout: {
@@ -862,7 +863,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     };
 
     // ── Flights (with FlightAware + ADS-B Exchange links + ROUTE VISUALIZATION) ──
-    ['fl-commercial','fl-private','fl-jets','fl-military'].forEach(layer => {
+    ['fl-commercial','fl-private','fl-jets','fl-military','fl-hyd'].forEach(layer => {
       map.on('click', layer, e => {
         if (!e.features?.length) return;
         const p = e.features[0].properties as any;
@@ -1674,7 +1675,8 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     setGeo('private-fl', activeLayers.private ? toFeatures(data.private_flights, 2) : []);
     setGeo('jets', activeLayers.jets ? toFeatures(data.private_jets, 2) : []);
     setGeo('military', activeLayers.military ? toFeatures(data.military_flights) : []);
-  }, [mapReady, data.commercial_flights, data.private_flights, data.private_jets, data.military_flights, activeLayers.flights, activeLayers.private, activeLayers.jets, activeLayers.military]);
+    setGeo('hyd-aircraft', (activeLayers as any).hyd_aircraft ? toFeatures((data as any).hyd_aircraft) : []);
+  }, [mapReady, data.commercial_flights, data.private_flights, data.private_jets, data.military_flights, (data as any).hyd_aircraft, activeLayers.flights, activeLayers.private, activeLayers.jets, activeLayers.military, (activeLayers as any).hyd_aircraft]);
 
   /**
    * Pull the palette out of the document whenever it can have changed.
@@ -2223,6 +2225,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     setVis(['fl-private'], activeLayers.private);
     setVis(['fl-jets'], activeLayers.jets);
     setVis(['fl-military'], activeLayers.military);
+    setVis(['fl-hyd'], (activeLayers as any).hyd_aircraft);
     setVis(['cctv-glow','cctv-dots','cctv-label'], activeLayers.cctv);
     setVis(['fires-heat'], activeLayers.fires);
     setVis(['weather-glow','weather-dots','weather-label'], activeLayers.weather);

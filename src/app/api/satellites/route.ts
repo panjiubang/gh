@@ -231,10 +231,22 @@ function loadFromDisk(): { sats: any[]; time: number } | null {
   try {
     if (!existsSync(CACHE_FILE)) return null;
     const data = JSON.parse(readFileSync(CACHE_FILE, 'utf-8'));
-    // Accept disk cache up to 4 hours old
-    if (data.sats?.length > 0 && Date.now() - data.time < 14400000) {
+    // TLE elements are valid for days — accept disk cache up to 24 hours old.
+    // SGP4 propagation accuracy degrades slowly; a stale TLE still produces
+    // a reasonable ground track for hours, far better than a 1300-sat fallback.
+    if (data.sats?.length > 0 && Date.now() - data.time < 86_400_000) {
       return data;
     }
+  } catch { /* corrupted cache */ }
+  return null;
+}
+
+/** Load stale cache regardless of age — used as backfill when all live sources fail. */
+function loadStaleFromDisk(): { sats: any[]; time: number } | null {
+  try {
+    if (!existsSync(CACHE_FILE)) return null;
+    const data = JSON.parse(readFileSync(CACHE_FILE, 'utf-8'));
+    if (data.sats?.length > 0) return data;
   } catch { /* corrupted cache */ }
   return null;
 }
@@ -293,24 +305,35 @@ export async function GET() {
     let source = 'memory-cache';
 
     if (globalCachedSats.length === 0 || globalCachedSats.length < 5000 || nowTime - globalCacheTime > 3600000) { // refresh if empty, too few, or stale
-      
-      // Primary: Fetch multiple CelesTrak groups in parallel
-      const groupResults = await Promise.allSettled(
-        CELESTRAK_GROUPS.map(url => fetchCelesTrakGroup(url))
-      );
+
+      // CelesTrak 403-rates aggressive parallel fetches. Request in small
+      // serial batches so the supplemental Starlink feed (which is on a
+      // different rate-limit bucket) survives even when the primary groups
+      // are throttled.
+      const groupResults: { name: string; line1: string; line2: string }[][] = [];
+      const BATCH = 3;
+      for (let i = 0; i < CELESTRAK_GROUPS.length; i += BATCH) {
+        const slice = CELESTRAK_GROUPS.slice(i, i + BATCH);
+        const results = await Promise.allSettled(slice.map(url => fetchCelesTrakGroup(url)));
+        for (const r of results) {
+          if (r.status === 'fulfilled') groupResults.push(r.value);
+        }
+        // Brief pause between batches to ease rate limiting
+        if (i + BATCH < CELESTRAK_GROUPS.length) {
+          await new Promise(r => setTimeout(r, 500));
+        }
+      }
       
       const seen = new Set<string>();
       const merged: { name: string; line1: string; line2: string }[] = [];
       
-      // 1. Add all newly fetched satellites
-      for (const result of groupResults) {
-        if (result.status === 'fulfilled') {
-          for (const sat of result.value) {
-            const noradId = sat.line1.substring(2, 7).trim();
-            if (!seen.has(noradId)) {
-              seen.add(noradId);
-              merged.push(sat);
-            }
+      // 1. Add all newly fetched satellites (groupResults is now an array of arrays)
+      for (const sats of groupResults) {
+        for (const sat of sats) {
+          const noradId = sat.line1.substring(2, 7).trim();
+          if (!seen.has(noradId)) {
+            seen.add(noradId);
+            merged.push(sat);
           }
         }
       }
@@ -334,8 +357,19 @@ export async function GET() {
         saveToDisk(merged);
       }
 
+      // If CelesTrak is rate-limited (403) but we have a stale disk cache,
+      // use it rather than falling through to SatNOGS' 1300-sat catalogue.
+      if (allSats.length < 500) {
+        const stale = loadStaleFromDisk();
+        if (stale && stale.sats.length > 500) {
+          globalCachedSats = stale.sats;
+          globalCacheTime = stale.time;
+          allSats = stale.sats;
+          source = `stale-disk-cache (${stale.sats.length} TLEs, age ${Math.round((nowTime - stale.time) / 3_600_000)}h)`;
+        }
+      }
 
-      // Fallback: SatNOGS if nothing yielded enough
+      // Last resort: SatNOGS if still nothing
       if (allSats.length < 500) {
         try {
           const res = await stealthFetch(SATNOGS_API, {
