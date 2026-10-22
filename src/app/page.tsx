@@ -142,6 +142,7 @@ export default function Dashboard() {
   const [backendStatus, setBackendStatus] = useState<'connecting' | 'connected' | 'error'>('connecting');
   const [mapView, setMapView] = useState({ zoom: 2.5, latitude: 20 });
   const [flyToLocation, setFlyToLocation] = useState<{ lat: number; lng: number; zoom?: number; ts: number } | null>(null);
+  const [focusEntity, setFocusEntity] = useState<{ kind: 'flight' | 'ship' | 'satellite'; id: string; label: string; lat: number; lng: number; ts: number } | null>(null);
   const [globalStats, setGlobalStats] = useState<any>(null);
   const mouseCoordsRef = useRef<{ lat: number; lng: number } | null>(null);
   const coordsDisplayRef = useRef<HTMLDivElement>(null);
@@ -212,6 +213,13 @@ export default function Dashboard() {
     const ports = [detail?.origin, detail?.destination]
       .filter((a): a is Airport => Boolean(a && Number.isFinite(a.lat) && Number.isFinite(a.lng)));
     setAircraftAirports((prev) => (ports.length ? { ...prev, [icao24]: ports } : prev));
+  }, []);
+
+  // Locate a searched moving entity: fly to it and hand it to the map so it
+  // rings the target and opens its detail.
+  const handleLocateEntity = useCallback((t: { kind: 'flight' | 'ship' | 'satellite'; id: string; label: string; lat: number; lng: number }) => {
+    setFlyToLocation({ lat: t.lat, lng: t.lng, zoom: 9, ts: Date.now() });
+    setFocusEntity({ ...t, ts: Date.now() });
   }, []);
 
   // Telemetry for watched aircraft, refreshed from whatever the feed last gave us.
@@ -951,6 +959,20 @@ export default function Dashboard() {
     (data.commercial_flights?.length||0)+(data.private_flights?.length||0)+(data.private_jets?.length||0)+(data.military_flights?.length||0)
   ), [data.commercial_flights, data.private_flights, data.private_jets, data.military_flights]);
 
+  // Searchable moving entities. Flattened here so the search bar gets one
+  // stable list per feed update rather than rebuilding it on every keystroke.
+  const searchableEntities = useMemo(() => ({
+    flights: [
+      ...(data.commercial_flights || []),
+      ...(data.private_flights || []),
+      ...(data.private_jets || []),
+      ...(data.military_flights || []),
+      ...(data.hyd_aircraft || []),
+    ],
+    ships: data.maritime_ships || [],
+    satellites: data.satellites || [],
+  }), [dataVersion, data.commercial_flights, data.private_flights, data.private_jets, data.military_flights, data.hyd_aircraft, data.maritime_ships, data.satellites]);
+
 
   return (
     <main className="fixed inset-0 w-full h-full bg-[var(--bg-void)] overflow-hidden">
@@ -1167,6 +1189,7 @@ export default function Dashboard() {
           onRightClick={handleRightClick} 
           onViewStateChange={setMapView} 
           flyToLocation={flyToLocation}
+          focusEntity={focusEntity}
           sweepData={sweepData}
           scanTargets={scanTargets}
           demoMode={demoMode}
@@ -1302,7 +1325,7 @@ export default function Dashboard() {
           <img src="/xingluo-logo.png" alt="星罗" className="w-8 h-8 md:w-10 md:h-10 shrink-0 drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]" />
           <div className="flex flex-col items-start gap-0.5">
             <h1 className="text-lg md:text-xl font-bold tracking-[0.4em] text-[#D4AF37] font-mono">星罗</h1>
-            <span className="text-[9px] md:text-[10px] font-mono tracking-[0.2em] opacity-80 uppercase text-[#D4AF37]">开源情报平台</span>
+            <span className="text-[9px] md:text-[10px] font-mono tracking-[0.2em] opacity-80 uppercase text-[#D4AF37]">全球态势感知</span>
           </div>
         </div>
       </motion.div>
@@ -1471,7 +1494,7 @@ export default function Dashboard() {
           <AnimatePresence>
             {showDesktopSearch && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="absolute right-12 top-1/2 -translate-y-1/2 w-80">
-                <SearchBar alwaysExpanded onLocate={(lat, lng, zoom) => { setFlyToLocation({ lat, lng, zoom, ts: Date.now() }); setShowDesktopSearch(false); }} />
+                <SearchBar alwaysExpanded entities={searchableEntities} onLocateEntity={handleLocateEntity} onLocate={(lat, lng, zoom) => { setFlyToLocation({ lat, lng, zoom, ts: Date.now() }); setShowDesktopSearch(false); }} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -1569,8 +1592,8 @@ export default function Dashboard() {
                       { name: '静默专项分析', url: 'http://localhost:8765/pages/zssf-verify.html', desc: 'AIS 静默检测' },
                       { name: 'ZS专题', url: 'http://127.0.0.1:8765/pages/zs-special.html', desc: 'ZS 专题分析' },
                       { name: '卫星船舶数据', url: 'http://127.0.0.1:8765/pages/satellite-data.html', desc: '卫星船舶数据' },
-                      { name: '空间天气', url: 'https://www.spaceweather.gov', desc: 'NOAA 空间预警' },
-                      { name: '地震监测', url: 'https://earthquake.usgs.gov', desc: 'USGS 全球地震' },
+                      { name: '智能问答', url: 'http://localhost:8765/pages/ai-chat.html', desc: '智能问答' },
+                      { name: '遥感数据', url: 'http://127.0.0.1:8765/pages/remote-sensing.html', desc: '遥感数据' },
                       { name: '气象中心', url: 'https://www.windy.com', desc: '全球气象可视化' },
                     ].map(link => (
                       <a
@@ -1778,7 +1801,7 @@ export default function Dashboard() {
                   {mobilePanel === 'intel' && <IntelFeed data={data} onLocate={(lat, lng) => { setFlyToLocation({ lat, lng, ts: Date.now() }); setMobilePanel(null); }} />}
                   {mobilePanel === 'search' && (
                     <div className="space-y-2">
-                      <SearchBar onLocate={(lat, lng, zoom) => { setFlyToLocation({ lat, lng, zoom, ts: Date.now() }); setMobilePanel(null); }} />
+                      <SearchBar entities={searchableEntities} onLocateEntity={(t) => { handleLocateEntity(t); setMobilePanel(null); }} onLocate={(lat, lng, zoom) => { setFlyToLocation({ lat, lng, zoom, ts: Date.now() }); setMobilePanel(null); }} />
                       <SharePanel mapView={mapView} activeLayers={activeLayers} mouseCoords={null} />
                     </div>
                   )}

@@ -37,6 +37,8 @@ interface OsirisMapProps {
   onRightClick?: (coords: { lat: number; lng: number }) => void;
   onViewStateChange?: (vs: { zoom: number; latitude: number }) => void;
   flyToLocation?: { lat: number; lng: number; zoom?: number; ts: number } | null;
+  /** Entity the search bar asked to reveal: fly to it, ring it, open its detail. */
+  focusEntity?: { kind: 'flight' | 'ship' | 'satellite'; id: string; label: string; lat: number; lng: number; ts: number } | null;
   projection?: 'mercator' | 'globe';
   terrainEnabled?: boolean;
   terrainRetry?: number;
@@ -105,7 +107,23 @@ function computeSolarTerminator(): [number, number][] {
 
 const EMPTY_FC = { type: 'FeatureCollection' as const, features: [] };
 
-function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightClick, onViewStateChange, flyToLocation, projection = 'globe', terrainEnabled = false, terrainRetry = 0, terrainFocus = 0, onTerrainStatusChange, onRetryMap, mapStyle = 'dark', sweepData, scanTargets = [], demoMode = false, theme = 'core', drawnPolygons = [], arcgisLayers = [], drawMode = null, onDrawComplete, onDrawProgress, onDrawCancel, drawCommand = null, onMapCenter, route = null, userLocation = null, followUser = false, onFollowInterrupt, navigating = false, aircraftAirports = {} }: OsirisMapProps) {
+/* ── POPUP MARKUP HELPERS ──
+   Pure string builders shared by the map's click handlers and by the
+   search-driven focus path, which opens the same popups programmatically. */
+const pStyle = `background:rgba(12,14,26,0.95);backdrop-filter:blur(16px);border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;`;
+const linkStyle = `display:inline-block;margin-top:8px;padding:5px 12px;font-size:10px;letter-spacing:0.12em;text-decoration:none;border-radius:5px;font-family:'JetBrains Mono',monospace;`;
+const htmlEsc = (s: any): string => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const idSafe = (s: any): string => String(s ?? '').replace(/[^a-zA-Z0-9_\.\-]/g, '');
+const urlSafe = (s: any): string => { const u = String(s ?? ''); return /^https?:\/\//i.test(u) ? u : '#'; };
+const formatTime = (iso: string | null) => {
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short' });
+  } catch { return '—'; }
+};
+
+function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightClick, onViewStateChange, flyToLocation, focusEntity = null, projection = 'globe', terrainEnabled = false, terrainRetry = 0, terrainFocus = 0, onTerrainStatusChange, onRetryMap, mapStyle = 'dark', sweepData, scanTargets = [], demoMode = false, theme = 'core', drawnPolygons = [], arcgisLayers = [], drawMode = null, onDrawComplete, onDrawProgress, onDrawCancel, drawCommand = null, onMapCenter, route = null, userLocation = null, followUser = false, onFollowInterrupt, navigating = false, aircraftAirports = {} }: OsirisMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
@@ -151,6 +169,187 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     satLayerRef.current?.setOrbit(null);
     setSelectedSat(null);
   }, []);
+
+  /* ── POPUP / DETAIL BUILDERS (component scope) ──
+     Extracted from the map-init closure so the search-driven focus path can
+     open the exact same popups the click handlers do. The markup, styles,
+     links and out-of-band detail fetches are unchanged. */
+  const showPopup = useCallback((coords: any, html: string) => {
+    const map = mapRef.current;
+    if (!map) return;
+    popupRef.current?.remove();
+    popupRef.current = new maplibregl.Popup({ closeButton: true, maxWidth: '420px', offset: 14 }).setLngLat(coords).setHTML(html).addTo(map);
+  }, []);
+
+  /** Applies a satellite selection by index into the array last handed to
+   *  setPoints — the same path a map click takes, shared with the search. */
+  const applySatSelection = useCallback((idx: number) => {
+    const layer = satLayerRef.current;
+    const p = satRowsRef.current[idx];
+    if (!layer || !p) return;
+    popupRef.current?.remove();
+    layer.setOrbit(null);
+    satPickedRef.current = idx;
+    satSelectedIdRef.current = p.noradId ?? null;
+    layer.setSelected(idx);
+    setSelectedSat({ ...p, periodMinutes: null, track: p.noradId ? 'loading' : 'unavailable' });
+
+    if (p.noradId) {
+      const wanted = p.noradId;
+      const stale = () => satSelectedIdRef.current !== wanted;
+      const mark = (track: SatelliteDetail['track'], periodMinutes: number | null = null) =>
+        setSelectedSat(prev => (prev && prev.noradId === wanted ? { ...prev, track, periodMinutes } : prev));
+      const at = satEpochRef.current;
+      fetch(`/api/satellites/orbit?id=${encodeURIComponent(wanted)}${at ? `&t=${at}` : ''}`)
+        .then(r => (r.ok ? r.json() : null))
+        .then(d => {
+          if (stale()) return;
+          if (!d?.segments?.length) { mark('unavailable'); return; }
+          layer.setOrbit(
+            d.segments.map((seg: number[][]) => seg.map(([lng, lat, altKm]) => ({ lng, lat, altKm }))),
+            parseColor(satColorFor(p.category, p.color, paletteRef.current)),
+          );
+          mark('ready', typeof d.periodMinutes === 'number' ? d.periodMinutes : null);
+        })
+        .catch(() => { if (!stale()) mark('unavailable'); });
+    }
+  }, []);
+
+  /** Selects a satellite by NORAD id — the id survives catalogue refreshes
+   *  where the picked index does not. Falls back to the catalogue row so the
+   *  readout still opens when the satellite layer is not currently drawn. */
+  const selectSatelliteByNorad = useCallback((noradId: string, fallback?: SatelliteRow | null) => {
+    const idx = satRowsRef.current.findIndex(r => r.noradId === noradId);
+    if (idx >= 0) { applySatSelection(idx); return; }
+    if (!fallback) return;
+    popupRef.current?.remove();
+    satPickedRef.current = null;
+    satSelectedIdRef.current = noradId;
+    satLayerRef.current?.setSelected(null);
+    satLayerRef.current?.setOrbit(null);
+    setSelectedSat({
+      name: fallback.name, lat: fallback.lat, lng: fallback.lng, alt: fallback.alt,
+      color: fallback.color, mission: fallback.mission, category: fallback.category,
+      noradId: fallback.noradId, periodMinutes: null, track: 'unavailable',
+    });
+  }, [applySatSelection]);
+
+  /** Flight click popup — same markup, links and `/api/aircraft` + route fetches. */
+  const buildFlightPopup = useCallback((coords: any, p: any) => {
+    const cs = (p.callsign || '').trim();
+    const routeLoadingId = `route-info-${Date.now()}`;
+    showPopup(coords, `<div style="${pStyle}border:1px solid rgba(255,255,255,0.08);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <span style="color:#E8E6E0;font-size:15px;font-weight:700;letter-spacing:0.08em;">${htmlEsc(cs)}</span>
+            <span style="color:#5C5A54;font-size:10px;">${htmlEsc(p.icao24||'')}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px;">
+            <div><span style="color:#5C5A54;font-size:9px;">机型</span><br/><span style="color:#B0BEC5;">${htmlEsc(p.model||'—')}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">高度</span><br/><span style="color:#B0BEC5;">${p.alt?Math.round(p.alt)+'m':'—'}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">速度</span><br/><span style="color:#B0BEC5;">${p.speed_knots||'—'}kt</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">航向</span><br/><span style="color:#B0BEC5;">${Math.round(p.heading||0)}°</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">注册号</span><br/><span style="color:#B0BEC5;">${htmlEsc(p.registration||'—')}</span></div>
+            <div><span style="color:#5C5A54;font-size:9px;">位置</span><br/><span style="color:#B0BEC5;">${coords[1].toFixed(2)},${coords[0].toFixed(2)}</span></div>
+          </div>
+          <div id="ac-${idSafe(p.icao24||'')}" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">
+            <span style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;">正在识别机架信息…</span>
+          </div>
+          <button onclick="window.osirisWatchFlight && window.osirisWatchFlight({ icao24: '${idSafe(p.icao24||'')}', callsign: '${idSafe(cs)}' })" style="width:100%;margin-top:8px;padding:6px 12px;background:rgba(0,229,255,0.10);border:1px solid rgba(0,229,255,0.35);color:#7FE9FF;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:bold;letter-spacing:0.1em;border-radius:4px;cursor:pointer;">+ 关注此航班</button>
+          <div id="${routeLoadingId}" style="margin-top:8px;padding:6px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+            <span style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;">正在解析航线…</span>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
+            <a href="https://www.flightaware.com/live/flight/${encodeURIComponent(cs)}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">FlightAware</a>
+            <a href="https://globe.adsbexchange.com/?icao=${encodeURIComponent(p.icao24||'')}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">ADS-B</a>
+            <a href="https://www.radarbox.com/data/flights/${encodeURIComponent(cs)}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">RadarBox</a>
+          </div>
+        </div>`);
+
+    // The transponder only reports a type code (often nothing at all), so
+    // resolve the real manufacturer/model and registration out of band.
+    if (p.icao24) {
+      fetch(`/api/aircraft?icao24=${encodeURIComponent(p.icao24)}`)
+        .then(r => (r.ok ? r.json() : null))
+        .then((d) => {
+          const el = document.getElementById(`ac-${p.icao24}`);
+          if (!el || !d || d.error) {
+            if (el) el.innerHTML = '<span style="color:#5C5A54;font-size:9px;">机架未在注册库中</span>';
+            return;
+          }
+          const bits = [d.registration, d.typeCode, d.operator].filter(Boolean)
+            .map((x: string) => htmlEsc(String(x))).join(' · ');
+          el.innerHTML =
+            `<div style="color:#E8E6E0;font-size:11px;line-height:1.35;">${htmlEsc(d.model || 'Unidentified type')}</div>` +
+            (bits ? `<div style="color:#78909C;font-size:9px;margin-top:2px;">${bits}</div>` : '');
+        })
+        .catch(() => {});
+    }
+
+    // Resolve origin/destination for the readout only. The line this used
+    // to draw was a straight hop between two airports, which is not the
+    // path flown — watched aircraft draw their real reported track instead.
+    const cleanCallsign = cs.replace(/\s+/g, '');
+    const routeParams = new URLSearchParams({
+      callsign: cleanCallsign,
+      icao24: p.icao24 || '',
+      lat: String(coords[1]),
+      lng: String(coords[0]),
+      speed: String(p.speed_knots || 0),
+    });
+    fetch(`/api/flight-route?${routeParams}`)
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(routeData => {
+        const el = document.getElementById(routeLoadingId);
+        if (!el) return;
+        if (routeData.found && routeData.origin && routeData.destination) {
+          const depTime = formatTime(routeData.departureTime);
+          const arrTime = formatTime(routeData.arrivalTime);
+          const pct = Math.round((routeData.progress || 0) * 100);
+          const distKm = routeData.totalDistanceKm || 0;
+          el.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                  <div><span style="color:#5C5A54;font-size:8px;">出发</span><br/><span style="color:#E8E6E0;font-size:13px;font-weight:700;">${htmlEsc(routeData.origin.iata || routeData.origin.icao)}</span> <span style="color:#5C5A54;font-size:9px;">${htmlEsc(routeData.origin.city)}</span></div>
+                  <span style="color:#5C5A54;font-size:11px;">&rarr;</span>
+                  <div style="text-align:right;"><span style="color:#5C5A54;font-size:8px;">到达</span><br/><span style="color:#E8E6E0;font-size:13px;font-weight:700;">${htmlEsc(routeData.destination.iata || routeData.destination.icao)}</span> <span style="color:#5C5A54;font-size:9px;">${htmlEsc(routeData.destination.city)}</span></div>
+                </div>
+                <div style="height:2px;background:rgba(255,255,255,0.06);border-radius:1px;margin:6px 0;"><div style="width:${pct}%;height:100%;background:rgba(255,255,255,0.35);border-radius:1px;"></div></div>
+                <div style="display:flex;justify-content:space-between;font-size:10px;color:#78909C;">
+                  <span>出发 ${depTime}</span>
+                  <span>${pct}% &middot; ${distKm.toLocaleString()}km</span>
+                  <span>到达 ${arrTime}</span>
+                </div>
+              `;
+        } else {
+          el.innerHTML = `<span style="color:#5C5A54;font-size:9px;">无计划航线</span>`;
+        }
+      })
+      .catch(() => {
+        const el = document.getElementById(routeLoadingId);
+        if (el) el.innerHTML = `<span style="color:#5C5A54;font-size:9px;">航线不可用</span>`;
+      });
+  }, [showPopup]);
+
+  /** Ship click popup — same markup, links and styles. */
+  const buildShipPopup = useCallback((coords: any, p: any) => {
+    const color = p.type === 'military' ? '#FF1744' : p.type === 'tanker' ? '#FF9500' : '#00E5FF';
+    const icon = p.type === 'military' ? '⚔️' : p.type === 'tanker' ? '🛢️' : '🚢';
+    showPopup(coords, `<div style="${pStyle}border:1px solid ${color}60;box-shadow:inset 0 0 12px ${color}15;">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${color}40;padding-bottom:6px;margin-bottom:8px;">
+          <div style="color:${color};font-size:12px;font-weight:700;letter-spacing:0.1em;">${icon} [ ${(p.type||'VESSEL').toUpperCase()} ]</div>
+          <div style="color:#5C5A54;font-size:9px;">旗国: ${p.flag||'未标'}</div>
+        </div>
+        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${p.name || '未识别船舶'}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;margin-bottom:8px;background:rgba(0,0,0,0.3);padding:6px;border-radius:4px;">
+          <div><span style="color:#5C5A54;">速度</span><br/><span style="color:${color};font-family:monospace;">${Number(p.speed).toFixed(1)} kn</span></div>
+          <div><span style="color:#5C5A54;">航向</span><br/><span style="color:${color};font-family:monospace;">${Number(p.heading).toFixed(0)}°</span></div>
+          <div><span style="color:#5C5A54;">纬度</span><br/><span style="color:#E8E6E0;font-family:monospace;">${coords[1].toFixed(4)}°</span></div>
+          <div><span style="color:#5C5A54;">经度</span><br/><span style="color:#E8E6E0;font-family:monospace;">${coords[0].toFixed(4)}°</span></div>
+        </div>
+        <div><span style="color:#5C5A54;font-size:9px;">目的地: </span><span style="color:#E8E6E0;font-size:9px;">${p.destination || '未知'}</span></div>
+        <a href="https://www.marinetraffic.com/en/ais/details/ships/mmsi:${p.mmsi}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ 来源 ↗ ]</a>
+      </div>`);
+  }, [showPopup]);
+
   const drawingCoordsRef = useRef<number[][]>([]);
 
   // Create aircraft icon on canvas (for WebGL symbol layer)
@@ -842,25 +1041,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     reportCamera();
 
     // ── POPUP HELPER ──
-    const popup = (coords: any, html: string) => {
-      popupRef.current?.remove();
-      popupRef.current = new maplibregl.Popup({ closeButton: true, maxWidth: '420px', offset: 14 }).setLngLat(coords).setHTML(html).addTo(map);
-    };
-    const pStyle = `background:rgba(12,14,26,0.95);backdrop-filter:blur(16px);border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;`;
-    const linkStyle = `display:inline-block;margin-top:8px;padding:5px 12px;font-size:10px;letter-spacing:0.12em;text-decoration:none;border-radius:5px;font-family:'JetBrains Mono',monospace;`;
-
-    // ── XSS PROTECTION HELPERS ──
-    const htmlEsc = (s: any): string => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-    const idSafe = (s: any): string => String(s ?? '').replace(/[^a-zA-Z0-9_\.\-]/g, '');
-    const urlSafe = (s: any): string => { const u = String(s ?? ''); return /^https?:\/\//i.test(u) ? u : '#'; };
-
-    const formatTime = (iso: string | null) => {
-      if (!iso) return '—';
-      try {
-        const d = new Date(iso);
-        return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short' });
-      } catch { return '—'; }
-    };
+    const popup = showPopup;
 
     // ── Flights (with FlightAware + ADS-B Exchange links + ROUTE VISUALIZATION) ──
     ['fl-commercial','fl-private','fl-jets','fl-military','fl-hyd'].forEach(layer => {
@@ -868,99 +1049,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
         if (!e.features?.length) return;
         const p = e.features[0].properties as any;
         const coords = (e.features[0].geometry as any).coordinates;
-        const cs = (p.callsign||'').trim();
-
-        // Show initial popup immediately (without route data)
-        const routeLoadingId = `route-info-${Date.now()}`;
-        popup(coords, `<div style="${pStyle}border:1px solid rgba(255,255,255,0.08);">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <span style="color:#E8E6E0;font-size:15px;font-weight:700;letter-spacing:0.08em;">${htmlEsc(cs)}</span>
-            <span style="color:#5C5A54;font-size:10px;">${htmlEsc(p.icao24||'')}</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px;">
-            <div><span style="color:#5C5A54;font-size:9px;">机型</span><br/><span style="color:#B0BEC5;">${htmlEsc(p.model||'—')}</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">高度</span><br/><span style="color:#B0BEC5;">${p.alt?Math.round(p.alt)+'m':'—'}</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">速度</span><br/><span style="color:#B0BEC5;">${p.speed_knots||'—'}kt</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">航向</span><br/><span style="color:#B0BEC5;">${Math.round(p.heading||0)}°</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">注册号</span><br/><span style="color:#B0BEC5;">${htmlEsc(p.registration||'—')}</span></div>
-            <div><span style="color:#5C5A54;font-size:9px;">位置</span><br/><span style="color:#B0BEC5;">${coords[1].toFixed(2)},${coords[0].toFixed(2)}</span></div>
-          </div>
-          <div id="ac-${idSafe(p.icao24||'')}" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">
-            <span style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;">正在识别机架信息…</span>
-          </div>
-          <button onclick="window.osirisWatchFlight && window.osirisWatchFlight({ icao24: '${idSafe(p.icao24||'')}', callsign: '${idSafe(cs)}' })" style="width:100%;margin-top:8px;padding:6px 12px;background:rgba(0,229,255,0.10);border:1px solid rgba(0,229,255,0.35);color:#7FE9FF;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:bold;letter-spacing:0.1em;border-radius:4px;cursor:pointer;">+ 关注此航班</button>
-          <div id="${routeLoadingId}" style="margin-top:8px;padding:6px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
-            <span style="color:#5C5A54;font-size:9px;letter-spacing:0.1em;">正在解析航线…</span>
-          </div>
-          <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
-            <a href="https://www.flightaware.com/live/flight/${encodeURIComponent(cs)}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">FlightAware</a>
-            <a href="https://globe.adsbexchange.com/?icao=${encodeURIComponent(p.icao24||'')}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">ADS-B</a>
-            <a href="https://www.radarbox.com/data/flights/${encodeURIComponent(cs)}" target="_blank" style="${linkStyle}color:#78909C;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">RadarBox</a>
-          </div>
-        </div>`);
-
-        // The transponder only reports a type code (often nothing at all), so
-        // resolve the real manufacturer/model and registration out of band.
-        if (p.icao24) {
-          fetch(`/api/aircraft?icao24=${encodeURIComponent(p.icao24)}`)
-            .then(r => (r.ok ? r.json() : null))
-            .then((d) => {
-              const el = document.getElementById(`ac-${p.icao24}`);
-              if (!el || !d || d.error) {
-                if (el) el.innerHTML = '<span style="color:#5C5A54;font-size:9px;">机架未在注册库中</span>';
-                return;
-              }
-              const bits = [d.registration, d.typeCode, d.operator].filter(Boolean)
-                .map((x: string) => htmlEsc(String(x))).join(' · ');
-              el.innerHTML =
-                `<div style="color:#E8E6E0;font-size:11px;line-height:1.35;">${htmlEsc(d.model || 'Unidentified type')}</div>` +
-                (bits ? `<div style="color:#78909C;font-size:9px;margin-top:2px;">${bits}</div>` : '');
-            })
-            .catch(() => {});
-        }
-
-        // Resolve origin/destination for the readout only. The line this used
-        // to draw was a straight hop between two airports, which is not the
-        // path flown — watched aircraft draw their real reported track instead.
-        const cleanCallsign = cs.replace(/\s+/g, '');
-        const routeParams = new URLSearchParams({
-          callsign: cleanCallsign,
-          icao24: p.icao24 || '',
-          lat: String(coords[1]),
-          lng: String(coords[0]),
-          speed: String(p.speed_knots || 0),
-        });
-        fetch(`/api/flight-route?${routeParams}`)
-          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-          .then(routeData => {
-            const el = document.getElementById(routeLoadingId);
-            if (!el) return;
-            if (routeData.found && routeData.origin && routeData.destination) {
-              const depTime = formatTime(routeData.departureTime);
-              const arrTime = formatTime(routeData.arrivalTime);
-              const pct = Math.round((routeData.progress || 0) * 100);
-              const distKm = routeData.totalDistanceKm || 0;
-              el.innerHTML = `
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                  <div><span style="color:#5C5A54;font-size:8px;">出发</span><br/><span style="color:#E8E6E0;font-size:13px;font-weight:700;">${htmlEsc(routeData.origin.iata || routeData.origin.icao)}</span> <span style="color:#5C5A54;font-size:9px;">${htmlEsc(routeData.origin.city)}</span></div>
-                  <span style="color:#5C5A54;font-size:11px;">&rarr;</span>
-                  <div style="text-align:right;"><span style="color:#5C5A54;font-size:8px;">到达</span><br/><span style="color:#E8E6E0;font-size:13px;font-weight:700;">${htmlEsc(routeData.destination.iata || routeData.destination.icao)}</span> <span style="color:#5C5A54;font-size:9px;">${htmlEsc(routeData.destination.city)}</span></div>
-                </div>
-                <div style="height:2px;background:rgba(255,255,255,0.06);border-radius:1px;margin:6px 0;"><div style="width:${pct}%;height:100%;background:rgba(255,255,255,0.35);border-radius:1px;"></div></div>
-                <div style="display:flex;justify-content:space-between;font-size:10px;color:#78909C;">
-                  <span>出发 ${depTime}</span>
-                  <span>${pct}% &middot; ${distKm.toLocaleString()}km</span>
-                  <span>到达 ${arrTime}</span>
-                </div>
-              `;
-            } else {
-              el.innerHTML = `<span style="color:#5C5A54;font-size:9px;">无计划航线</span>`;
-            }
-          })
-          .catch(() => {
-            const el = document.getElementById(routeLoadingId);
-            if (el) el.innerHTML = `<span style="color:#5C5A54;font-size:9px;">航线不可用</span>`;
-          });
+        buildFlightPopup(coords, p);
       });
       map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
       map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = ''; });
@@ -1030,49 +1119,16 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       const hits = map.queryRenderedFeatures(e.point);
       if (hits.some(f => f.layer?.id && CLICKABLE_LAYERS.has(f.layer.id))) return;
       const idx = layer.pick(e.point.x, e.point.y);
-      const p = idx == null ? null : satRowsRef.current[idx];
       // Clicking past every satellite is how a selection is dismissed, so an
       // empty click has to clear the ring and the track rather than leave them
       // lit over nothing.
-      if (idx == null || !p) { clearSat(); return; }
+      if (idx == null) { clearSat(); return; }
 
       // The readout is a panel, not a MapLibre popup: a popup can only anchor
       // to a ground coordinate, and these markers are drawn at altitude. Any
       // other layer's popup is still welcome to the screen, but not on top of
       // this selection.
-      popupRef.current?.remove();
-      layer.setOrbit(null);
-      satPickedRef.current = idx;
-      satSelectedIdRef.current = p.noradId ?? null;
-      layer.setSelected(idx);
-      setSelectedSat({ ...p, periodMinutes: null, track: p.noradId ? 'loading' : 'unavailable' });
-
-      // Draw the selected satellite's orbit. Fetched per click rather than
-      // bundled with the catalogue: that payload is already megabytes, and an
-      // operator looks at one orbit at a time.
-      if (p.noradId) {
-        const wanted = p.noradId;
-        // A slower reply for a satellite the operator has already moved on
-        // from must not draw over the one they are looking at now.
-        const stale = () => satSelectedIdRef.current !== wanted;
-        const mark = (track: SatelliteDetail['track'], periodMinutes: number | null = null) =>
-          setSelectedSat(prev => (prev && prev.noradId === wanted ? { ...prev, track, periodMinutes } : prev));
-        const at = satEpochRef.current;
-        fetch(`/api/satellites/orbit?id=${encodeURIComponent(wanted)}${at ? `&t=${at}` : ''}`)
-          .then(r => (r.ok ? r.json() : null))
-          .then(d => {
-            if (stale()) return;
-            if (!d?.segments?.length) { mark('unavailable'); return; }
-            layer.setOrbit(
-              d.segments.map((seg: number[][]) => seg.map(([lng, lat, altKm]) => ({ lng, lat, altKm }))),
-              parseColor(satColorFor(p.category, p.color, paletteRef.current)),
-            );
-            mark('ready', typeof d.periodMinutes === 'number' ? d.periodMinutes : null);
-          })
-          // No track is fine; the satellite still shows — but the readout says so
-          // rather than sitting on 'plotting' forever.
-          .catch(() => { if (!stale()) mark('unavailable'); });
-      }
+      applySatSelection(idx);
     });
 
     // The cursor should say a satellite is clickable, like every other layer.
@@ -1444,24 +1500,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
       if (!e.features?.length) return;
       const p = e.features[0].properties as any;
       const coords = (e.features[0].geometry as any).coordinates;
-      const color = p.type === 'military' ? '#FF1744' : p.type === 'tanker' ? '#FF9500' : '#00E5FF';
-      const icon = p.type === 'military' ? '⚔️' : p.type === 'tanker' ? '🛢️' : '🚢';
-      
-      popup(coords, `<div style="${pStyle}border:1px solid ${color}60;box-shadow:inset 0 0 12px ${color}15;">
-        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${color}40;padding-bottom:6px;margin-bottom:8px;">
-          <div style="color:${color};font-size:12px;font-weight:700;letter-spacing:0.1em;">${icon} [ ${(p.type||'VESSEL').toUpperCase()} ]</div>
-          <div style="color:#5C5A54;font-size:9px;">旗国: ${p.flag||'未标'}</div>
-        </div>
-        <div style="color:#E8E6E0;font-size:11px;font-weight:bold;margin-bottom:10px;">${p.name || '未识别船舶'}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:9px;margin-bottom:8px;background:rgba(0,0,0,0.3);padding:6px;border-radius:4px;">
-          <div><span style="color:#5C5A54;">速度</span><br/><span style="color:${color};font-family:monospace;">${Number(p.speed).toFixed(1)} kn</span></div>
-          <div><span style="color:#5C5A54;">航向</span><br/><span style="color:${color};font-family:monospace;">${Number(p.heading).toFixed(0)}°</span></div>
-          <div><span style="color:#5C5A54;">纬度</span><br/><span style="color:#E8E6E0;font-family:monospace;">${coords[1].toFixed(4)}°</span></div>
-          <div><span style="color:#5C5A54;">经度</span><br/><span style="color:#E8E6E0;font-family:monospace;">${coords[0].toFixed(4)}°</span></div>
-        </div>
-        <div><span style="color:#5C5A54;font-size:9px;">目的地: </span><span style="color:#E8E6E0;font-size:9px;">${p.destination || '未知'}</span></div>
-        <a href="https://www.marinetraffic.com/en/ais/details/ships/mmsi:${p.mmsi}" target="_blank" style="${linkStyle}flex:1;text-align:center;color:${color};border:1px solid ${color}40;background:${color}15;display:inline-block;width:100%;box-sizing:border-box;margin-top:4px;">[ 来源 ↗ ]</a>
-      </div>`);
+      buildShipPopup(coords, p);
     });
 
     // ── Satellite Ships (MySQL AIS) — all DB fields ──
@@ -1808,6 +1847,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     if (al.sat_navigation) enabledCategories.push('navigation');
     if (al.sat_earth) enabledCategories.push('earth_obs');
     if (al.sat_science) enabledCategories.push('science');
+    if (al.sat_other) enabledCategories.push('other');
     
     if (enabledCategories.length === 0) {
       setGeo('satellites', []);
@@ -1822,7 +1862,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     satRowsRef.current = filtered;
     satLayerRef.current?.setPoints(toSatPoints(filtered));
     resyncSatSelection(filtered);
-  }, [mapReady, data.satellites, activeLayers.satellites, (activeLayers as any).sat_comms, (activeLayers as any).sat_military, (activeLayers as any).sat_navigation, (activeLayers as any).sat_earth, (activeLayers as any).sat_science, data.satellites_at, setGeo, toSatPoints, resyncSatSelection, clearSat]);
+  }, [mapReady, data.satellites, activeLayers.satellites, (activeLayers as any).sat_comms, (activeLayers as any).sat_military, (activeLayers as any).sat_navigation, (activeLayers as any).sat_earth, (activeLayers as any).sat_science, (activeLayers as any).sat_other, data.satellites_at, setGeo, toSatPoints, resyncSatSelection, clearSat]);
 
   useEffect(() => {
     if (!mapReady) return;
@@ -2205,7 +2245,7 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
   useEffect(() => {
     if (!mapReady) return;
     setVis(['eq-circles','eq-label'], activeLayers.earthquakes);
-    const anySat = activeLayers.satellites || (activeLayers as any).sat_comms || (activeLayers as any).sat_military || (activeLayers as any).sat_navigation || (activeLayers as any).sat_earth || (activeLayers as any).sat_science;
+    const anySat = activeLayers.satellites || (activeLayers as any).sat_comms || (activeLayers as any).sat_military || (activeLayers as any).sat_navigation || (activeLayers as any).sat_earth || (activeLayers as any).sat_science || (activeLayers as any).sat_other;
     // The circle layers stay hidden whatever the toggles say — the 3D layer
     // is the single representation, and showing both drew every satellite
     // twice, once flat on the ground and once at altitude.
@@ -2384,6 +2424,66 @@ function OsirisMap({ data, activeLayers, onEntityClick, onMouseCoords, onRightCl
     if (!mapReady || !mapRef.current || !flyToLocation) return;
     mapRef.current.flyTo({ center: [flyToLocation.lng, flyToLocation.lat], zoom: flyToLocation.zoom ?? 8, duration: 2000 });
   }, [mapReady, flyToLocation]);
+
+  // ── Focus entity (search → locate) ──
+  // Keyed on focusEntity.ts so a repeated poll of the underlying feeds does not
+  // re-fly the camera; only a new search selects a new entity.
+  useEffect(() => {
+    if (!mapReady || !mapRef.current) return;
+    const map = mapRef.current;
+
+    if (!focusEntity) {
+      const src = map.getSource('focus-highlight') as maplibregl.GeoJSONSource | undefined;
+      src?.setData(EMPTY_FC as any);
+      return;
+    }
+
+    // The ring is added lazily, so it sits above whatever layers exist at the
+    // moment of the search without touching the init-time layer order.
+    if (!map.getSource('focus-highlight')) {
+      map.addSource('focus-highlight', { type: 'geojson', data: EMPTY_FC as any });
+    }
+    if (!map.getLayer('focus-highlight-pulse')) {
+      map.addLayer({ id: 'focus-highlight-pulse', type: 'circle', source: 'focus-highlight', paint: {
+        'circle-radius': ['interpolate',['linear'],['zoom'], 1,16, 5,24, 10,36],
+        'circle-color': '#D4AF37', 'circle-opacity': 0.16, 'circle-blur': 1,
+      }});
+    }
+    if (!map.getLayer('focus-highlight-ring')) {
+      map.addLayer({ id: 'focus-highlight-ring', type: 'circle', source: 'focus-highlight', paint: {
+        'circle-radius': ['interpolate',['linear'],['zoom'], 1,9, 5,13, 10,20],
+        'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-width': 2, 'circle-stroke-color': '#D4AF37', 'circle-stroke-opacity': 0.9,
+      }});
+    }
+    const src = map.getSource('focus-highlight') as maplibregl.GeoJSONSource;
+    src.setData({
+      type: 'FeatureCollection',
+      features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: [focusEntity.lng, focusEntity.lat] }, properties: {} }],
+    });
+
+    if (focusEntity.kind === 'satellite') {
+      const row = (data.satellites || []).find((s: any) => String(s.noradId ?? '') === focusEntity.id) || null;
+      selectSatelliteByNorad(focusEntity.id, row);
+      return;
+    }
+
+    if (focusEntity.kind === 'flight') {
+      const buckets = [data.commercial_flights, data.private_flights, data.private_jets, data.military_flights, data.hyd_aircraft];
+      let hit: any = null;
+      for (const bucket of buckets) {
+        hit = (bucket || []).find((f: any) => String(f.icao24 || f.callsign || '') === focusEntity.id);
+        if (hit) break;
+      }
+      if (hit) buildFlightPopup([focusEntity.lng, focusEntity.lat], hit);
+      return;
+    }
+
+    const ship = (data.maritime_ships || []).find((s: any) => String(s.mmsi ?? '') === focusEntity.id);
+    if (ship) buildShipPopup([focusEntity.lng, focusEntity.lat], ship);
+    // Deliberately not keyed on `data`: the feeds poll, and re-running this
+    // effect on each poll would yank the camera back to the entity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, focusEntity?.ts, selectSatelliteByNorad, buildFlightPopup, buildShipPopup]);
 
   // 3D buildings are independent of the elevation renderer.
   useEffect(() => {

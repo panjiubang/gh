@@ -88,6 +88,7 @@ const LAYER_GROUPS: LayerGroupDef[] = [
       { key: 'sat_navigation', label: 'GPS / 导航', dataKey: 'satellites', catKey: 'navigation' },
       { key: 'sat_earth', label: '对地观测', dataKey: 'satellites', catKey: 'earth_obs' },
       { key: 'sat_science', label: '空间站 / 望远镜', dataKey: 'satellites', catKey: 'science' },
+      { key: 'sat_other', label: '其他 / 碎片', dataKey: 'satellites', catKey: 'other' },
     ],
   },
   {
