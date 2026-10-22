@@ -1,0 +1,285 @@
+{
+  "target": {
+    "lat": 15.184,
+    "lng": 117.751,
+    "name": "黄岩岛 (Scarborough Shoal)"
+  },
+  "radius_nm": 40,
+  "radius_m": 74080,
+  "bbox": [
+    117.059471,
+    14.516613,
+    118.442529,
+    15.851387
+  ],
+  "area_km2": 21951,
+  "date_range": {
+    "start": "2026-09-10",
+    "end": "2026-09-12",
+    "datetime": "2026-09-10T00:00:00Z/2026-09-12T23:59:59Z"
+  },
+  "collections": [
+    "sentinel-2-l2a",
+    "sentinel-1-grd"
+  ],
+  "summary": [
+    {
+      "collection": "sentinel-2-l2a",
+      "count": 9,
+      "matched": 9
+    },
+    {
+      "collection": "sentinel-1-grd",
+      "count": 1,
+      "matched": 1
+    }
+  ],
+  "total_scenes": 10,
+  "generated_at": "2026-09-22T12:30:04.948Z",
+  "scenes": [
+    {
+      "id": "S2A_50PMB_20260911_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:53:56.627000Z",
+      "platform": "sentinel-2a",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 93.725866,
+      "bbox": [
+        116.06786,
+        14.382592,
+        117.090936,
+        15.377112
+      ],
+      "area_km2": 12116,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/MB/2026/9/S2A_50PMB_20260911_0_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/MB/2026/9/S2A_50PMB_20260911_0_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2A_50PMB_20260911_0_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_53_56.627000Z_thumb.jpg"
+    },
+    {
+      "id": "S2A_50PNB_20260911_1_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:53:52.864000Z",
+      "platform": "sentinel-2a",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 99.999785,
+      "bbox": [
+        116.999823,
+        14.384974,
+        117.881057,
+        15.377131
+      ],
+      "area_km2": 10411,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/NB/2026/9/S2A_50PNB_20260911_1_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/NB/2026/9/S2A_50PNB_20260911_1_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2A_50PNB_20260911_1_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_53_52.864000Z_thumb.jpg"
+    },
+    {
+      "id": "S2A_50PMC_20260911_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:53:42.110000Z",
+      "platform": "sentinel-2a",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 98.581767,
+      "bbox": [
+        116.063709,
+        15.286247,
+        117.091341,
+        16.280805
+      ],
+      "area_km2": 12118,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/MC/2026/9/S2A_50PMC_20260911_0_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/MC/2026/9/S2A_50PMC_20260911_0_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2A_50PMC_20260911_0_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_53_42.110000Z_thumb.jpg"
+    },
+    {
+      "id": "S2A_50PNC_20260911_1_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:53:38.362000Z",
+      "platform": "sentinel-2a",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 99.998039,
+      "bbox": [
+        116.999822,
+        15.286534,
+        118.02744,
+        16.280824
+      ],
+      "area_km2": 12114,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/NC/2026/9/S2A_50PNC_20260911_1_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/NC/2026/9/S2A_50PNC_20260911_1_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2A_50PNC_20260911_1_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_53_38.362000Z_thumb.jpg"
+    },
+    {
+      "id": "S2A_50PPC_20260911_1_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:53:31.393000Z",
+      "platform": "sentinel-2a",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 100,
+      "bbox": [
+        117.932755,
+        15.591416,
+        118.097786,
+        16.278754
+      ],
+      "area_km2": 1344,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/PC/2026/9/S2A_50PPC_20260911_1_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/PC/2026/9/S2A_50PPC_20260911_1_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2A_50PPC_20260911_1_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_53_31.393000Z_thumb.jpg"
+    },
+    {
+      "id": "S2B_50PNB_20260911_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:43:40.450000Z",
+      "platform": "sentinel-2b",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 99.999452,
+      "bbox": [
+        117.386454,
+        14.382221,
+        118.022885,
+        15.376298
+      ],
+      "area_km2": 7534,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/NB/2026/9/S2B_50PNB_20260911_0_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/NB/2026/9/S2B_50PNB_20260911_0_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2B_50PNB_20260911_0_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_43_40.450000Z_thumb.jpg"
+    },
+    {
+      "id": "S2B_50PPB_20260911_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:43:37.718000Z",
+      "platform": "sentinel-2b",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 99.871606,
+      "bbox": [
+        117.927534,
+        14.376412,
+        118.954543,
+        15.375181
+      ],
+      "area_km2": 12215,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/PB/2026/9/S2B_50PPB_20260911_0_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/PB/2026/9/S2B_50PPB_20260911_0_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2B_50PPB_20260911_0_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_43_37.718000Z_thumb.jpg"
+    },
+    {
+      "id": "S2B_50PNC_20260911_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:43:26.153000Z",
+      "platform": "sentinel-2b",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 100,
+      "bbox": [
+        117.58887,
+        15.285851,
+        118.02744,
+        16.279265
+      ],
+      "area_km2": 5166,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/NC/2026/9/S2B_50PNC_20260911_0_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/NC/2026/9/S2B_50PNC_20260911_0_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2B_50PNC_20260911_0_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_43_26.153000Z_thumb.jpg",
+      "preview_local": "./imagery/sentinel-2-l2a_2026-09-11T02_43_26.153000Z_preview.jpg"
+    },
+    {
+      "id": "S2B_50PPC_20260911_0_L2A",
+      "collection": "sentinel-2-l2a",
+      "datetime": "2026-09-11T02:43:23.040000Z",
+      "platform": "sentinel-2b",
+      "orbit": null,
+      "relative_orbit": null,
+      "polarization": null,
+      "instrument_mode": null,
+      "resolution": null,
+      "cloud_cover": 97.575903,
+      "bbox": [
+        117.931392,
+        15.279661,
+        118.963242,
+        16.278754
+      ],
+      "area_km2": 12223,
+      "thumbnail": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/PC/2026/9/S2B_50PPC_20260911_0_L2A/preview.jpg",
+      "preview": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/50/P/PC/2026/9/S2B_50PPC_20260911_0_L2A/TCI.tif",
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a/items/S2B_50PPC_20260911_0_L2A",
+      "thumbnail_local": "./imagery/sentinel-2-l2a_2026-09-11T02_43_23.040000Z_thumb.jpg",
+      "preview_local": "./imagery/sentinel-2-l2a_2026-09-11T02_43_23.040000Z_preview.jpg"
+    },
+    {
+      "id": "S1D_IW_GRDH_1SDV_20260910T215418_20260910T215432_004521_008672",
+      "collection": "sentinel-1-grd",
+      "datetime": "2026-09-10T21:54:25.770049Z",
+      "platform": "sentinel-1d",
+      "orbit": "descending",
+      "relative_orbit": 105,
+      "polarization": [
+        "VV",
+        "VH"
+      ],
+      "instrument_mode": "IW",
+      "resolution": 20,
+      "cloud_cover": null,
+      "bbox": [
+        117.8877077,
+        14.930189,
+        120.3513552,
+        16.0914366
+      ],
+      "area_km2": 33965,
+      "thumbnail": "s3://sentinel-s1-l1c/GRD/2026/9/10/IW/DV/S1D_IW_GRDH_1SDV_20260910T215418_20260910T215432_004521_008672_1B4E/preview/quick-look.png",
+      "preview": null,
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-1-grd/items/S1D_IW_GRDH_1SDV_20260910T215418_20260910T215432_004521_008672"
+    }
+  ]
+}

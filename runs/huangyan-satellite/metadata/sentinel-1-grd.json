@@ -1,0 +1,48 @@
+{
+  "collection": "sentinel-1-grd",
+  "query": {
+    "bbox": [
+      117.059471,
+      14.516613,
+      118.442529,
+      15.851387
+    ],
+    "datetime": "2026-09-10T00:00:00Z/2026-09-12T23:59:59Z",
+    "center": {
+      "lat": 15.184,
+      "lng": 117.751,
+      "name": "黄岩岛 (Scarborough Shoal)"
+    },
+    "radius_nm": 40
+  },
+  "matched": 1,
+  "returned": 1,
+  "scenes": [
+    {
+      "id": "S1D_IW_GRDH_1SDV_20260910T215418_20260910T215432_004521_008672",
+      "collection": "sentinel-1-grd",
+      "datetime": "2026-09-10T21:54:25.770049Z",
+      "platform": "sentinel-1d",
+      "orbit": "descending",
+      "relative_orbit": 105,
+      "polarization": [
+        "VV",
+        "VH"
+      ],
+      "instrument_mode": "IW",
+      "resolution": 20,
+      "cloud_cover": null,
+      "bbox": [
+        117.8877077,
+        14.930189,
+        120.3513552,
+        16.0914366
+      ],
+      "area_km2": 33965,
+      "thumbnail": "s3://sentinel-s1-l1c/GRD/2026/9/10/IW/DV/S1D_IW_GRDH_1SDV_20260910T215418_20260910T215432_004521_008672_1B4E/preview/quick-look.png",
+      "preview": null,
+      "product": null,
+      "self_href": "https://earth-search.aws.element84.com/v1/collections/sentinel-1-grd/items/S1D_IW_GRDH_1SDV_20260910T215418_20260910T215432_004521_008672"
+    }
+  ]
+}
